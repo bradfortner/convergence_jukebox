@@ -49,6 +49,8 @@ def set_up_user_files_first_time():
     else:
         print "music directory does not exist."
         os.makedirs(str(os.path.dirname(full_path)) + "\music")
+        print "Program Stopped. Please place some mp3's in the Convergence Jukebox music directory and then re-run the software"
+        sys.exit()
 
     if os.path.exists("log.txt"):
         print "log.txt exists. Nothing to do here."
@@ -255,10 +257,14 @@ def count_number_mp3_songs():
     global last_file_count_a
     global current_file_count
     global last_file_count
+    mp3_counter = 0
     full_path = os.path.realpath(__file__)
 
     mp3_counter = len(glob.glob1(str(os.path.dirname(full_path)) + "\music", "*.mp3"))  # Counts number of MP3 files in library
     current_file_count = int(mp3_counter)  # provides int output for later comparison
+    if int(mp3_counter) == 0:
+        print "Program Stopped. Please place some mp3's in the Convergence Jukebox music directory and then re-run the software"
+        sys.exit()
 
     past_mp3_file_count = open("file_count.txt", "r")  # Looks at number mp3 files from last run and looks for a difference
     for last_file_count_a in past_mp3_file_count:
