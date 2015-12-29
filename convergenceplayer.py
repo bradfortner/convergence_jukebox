@@ -23,6 +23,7 @@ from ctypes import *  # Used by playmp3.py windows based mp3 player http://bit.l
 import csv
 import getpass  # Used to get user name http://stackoverflow.com/questions/4325416/how-do-i-get-the-username-in-python
 import re  # Used in searching Genre substrings. Specifically word-boundaries of regular expressions.
+from Tkinter import *  # Used as message to alert users to place MP3's in music folder
 
 computer_account_user_name = getpass.getuser()
 genre_file_changed = ""
@@ -48,7 +49,8 @@ song_list = []  # List is used to build final list of all songs including ID3 in
 
 def set_up_user_files_first_time():
 
-    full_path = os.path.realpath(__file__)  # http://stackoverflow.com/questions/5137497/find-current-directory-and-files-directory
+    global full_path
+    full_path = os.path.realpath('__file__')  # http://stackoverflow.com/questions/5137497/find-current-directory-and-files-directory
     artist_list =[]
 
     if os.path.exists(str(os.path.dirname(full_path)) + "\music"):
@@ -57,7 +59,13 @@ def set_up_user_files_first_time():
         print "music directory does not exist."
         os.makedirs(str(os.path.dirname(full_path)) + "\music")
         print "Program Stopped. Please place some mp3's in the Convergence Jukebox music directory and then re-run the software"
-        sys.exit()
+        master = Tk()
+        whatever_you_do = "Program Stopped. Please place some mp3's in the Convergence Jukebox music directory and then re-run the software"
+        msg = Message(master, text = whatever_you_do)
+        msg.config(bg='white', font=('times', 24, 'italic'), justify = 'center')
+        msg.pack()
+        mainloop( )
+        #sys.exit()
 
     if os.path.exists("log.txt"):
         print "log.txt exists. Nothing to do here."
@@ -265,12 +273,18 @@ def count_number_mp3_songs():
     global current_file_count
     global last_file_count
     mp3_counter = 0
-    full_path = os.path.realpath(__file__)
+    full_path = os.path.realpath('__file__')
 
     mp3_counter = len(glob.glob1(str(os.path.dirname(full_path)) + "\music", "*.mp3"))  # Counts number of MP3 files in library
     current_file_count = int(mp3_counter)  # provides int output for later comparison
     if int(mp3_counter) == 0:
         print "Program Stopped. Please place some mp3's in the Convergence Jukebox music directory and then re-run the software"
+        master = Tk()
+        whatever_you_do = "Program Stopped. Please place some mp3's in the Convergence Jukebox music directory and then re-run the software"
+        msg = Message(master, text = whatever_you_do)
+        msg.config(bg='white', font=('times', 24, 'italic'))
+        msg.pack()
+        mainloop( )
         sys.exit()
 
     past_mp3_file_count = open("file_count.txt", "r")  # Looks at number mp3 files from last run and looks for a difference
@@ -304,7 +318,7 @@ def song_list_generator():
 
         location_list = []  # Creates temporary location_list used for initial song file names for mp3 player.
         # File names later inserted in song_list to be used to play mp3's
-        full_path = os.path.realpath(__file__)
+        full_path = os.path.realpath('__file__')
         for name in os.listdir(str(os.path.dirname(full_path)) + "\music" + "\\"):  # Reads all files in the /music directory
             if name.endswith(".mp3"):  # If statement searching for files with mp3 designation
                 title = name  # Name of mp3 transferred to title variable
@@ -343,8 +357,7 @@ def song_list_generator():
             build_list.append(x)
             build_list = []
             y = len(location_list) - x
-            print "Building play_list. Processing " + str(full_file_name) + ". " + str(y) \
-                  + " files remaining to process."
+            print "Building play_list. Processing " + str(full_file_name) + ". " + str(y) + " files remaining to process."
             x += 1
         print len(song_list_generate)
 
@@ -381,7 +394,7 @@ def play_random_song():
     log_file_entry.write(str(time_date_stamp + ',' + str(song_list[x][8]) + ',' + str(mode) + ',' + '0' + '\n'))
     log_file_entry.close()
 
-    full_path = os.path.realpath(__file__)
+    full_path = os.path.realpath('__file__')
     print "Now playing: " + str(x)
     playMP3(str(os.path.dirname(full_path)) + '\music' + '\\\\' + song_list[x][8])  # Plays song using mp3Play.
     # info on mp3Play at http://www.mailsend-online.com/blog/play-mp3-files-with-python-on-windows.html
@@ -469,7 +482,7 @@ def play_list_player():
         delete_song_index = random_list[song_index]  # Variable assigned to song number song number to be deleted.
         if song_number == delete_song_index:  # Checks if song to be deleted is still in random_list
             del random_list[song_index]  # Deletes song number from random list if found. http://bit.ly/1MRbT6I
-    full_path = os.path.realpath(__file__)
+    full_path = os.path.realpath('__file__')
     playMP3(str(os.path.dirname(full_path)) + '\music' + '\\\\' + song_list[x][8])  # Plays song using mp3Play.
     #  Info on mp3Play at http://bit.ly/1MgaGCh
     play_list_recover = open('play_list.pkl', 'rb')
@@ -912,12 +925,26 @@ def genre_year_artist_random_sort_engine():
                 or flag_twelve != "null" or flag_thirteen != "null":
             artist_by_year_random_sorter()
 
+def artist_list_generator():
+    artist_list =[]
+    x=0
+    for i in song_list:
+        if song_list[x][1] not in artist_list:
+            artist_list.append(song_list[x][1])
+        x +=1
+    print artist_list
+    artist_list_file_populate = open('artist_list.pkl', 'wb')
+    pickle.dump(artist_list, artist_list_file_populate)
+    artist_list_file_populate.close()
+    print "artist_list.pkl populated."
+
 set_up_user_files_first_time()
 write_jukebox_startup_to_log()  # Writes Jukebox start time to log.
 genre_read_and_select_engine()  # Invokes and builds lists for random play genre selection process.
 count_number_mp3_songs()  # Counts number of .mp3 files in /music.
 if not song_list:
     song_list_generator()
+artist_list_generator()
 infinite_loop = 1  # Jukebox infinite loop.
 while infinite_loop == 1:  # This infinite loop is the mp3 playback engine for the Jukebox. http://bit.ly/1vHqVkJ
     play_list_loader()  # Loads paid play_list
