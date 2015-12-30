@@ -33,11 +33,14 @@ from ctypes import *  # Used by playmp3.py windows based mp3 player.
 import datetime  # Used in RSS generation.
 import PyRSS2Gen  # Used n RSS generation.
 import getpass  # Used to get user name http://stackoverflow.com/questions/4325416/how-do-i-get-the-username-in-python
+import os
+import sys
 
 computer_account_user_name = getpass.getuser()  # Used to write various log and RSS files to local directories.
 
 winmm = windll.winmm  # Variable used in playmp3.py.
 
+full_path = os.path.realpath('__file__')  # http://stackoverflow.com/questions/5137497/find-current-directory-and-files-directory
 
 def mciSend(s):  # Function of playmp3.py
     i = winmm.mciSendStringA(s, 0, 0, 0)
@@ -2030,6 +2033,14 @@ def get_song_name():  # This function uses the tkInter root after method to read
     # If it has the routine will update the jukebox screen accordingly.
     # From http://stackoverflow.com/questions/459083/how-do-you-run-your-own-code-alongside-tkinters-event-loop.
 
+def so_long(event=None):
+    if os.path.exists(str(os.path.dirname(full_path)) + "\convergenceplayer.py"):
+        os.system("player_quit_py.exe")  # Launches Convergence Jukebox Player
+        jukebox_display.destroy()
+    else:
+        #os.system("player_quit.exe")  # Launches Convergence Jukebox Player
+        os.system("taskkill /im convergenceplayer.exe")
+        jukebox_display.destroy()
 
 cursor_position = 0  # Between 0 and end of mp3 library. Used to define what song button is selected
 # and the song added to playList from library
@@ -2100,6 +2111,7 @@ jukebox_display.bind("<Down>", down)  # "<Down>" is keyname.
 jukebox_display.bind("<Up>", up)  # "<Up>" is keyname.
 jukebox_display.bind("<Left>", left)  # "<Left>" is keyname.
 jukebox_display.bind("<Right>", right)  # "<Right>" is keyname.
+jukebox_display.bind("<Escape>", so_long)  # Binds esc key to kill function
 jukebox_display.bind("a", alphabet_sort_jump_a)  # Binds a key to a sort function
 jukebox_display.bind("d", alphabet_sort_jump_d)  # Binds d key to d sort function
 jukebox_display.bind("g", alphabet_sort_jump_g)  # Binds g key to g sort function
@@ -2109,5 +2121,6 @@ jukebox_display.bind("p", alphabet_sort_jump_p)  # Binds p key to p sort functio
 jukebox_display.bind("s", alphabet_sort_jump_s)  # Binds s key to s sort function
 jukebox_display.bind("t", alphabet_sort_jump_t)  # Binds t key to t sort function
 jukebox_display.bind("w", alphabet_sort_jump_w)  # Binds w key to w sort function
+
 get_song_name()
 jukebox_display.mainloop()  # starts the event (infinite) loop
