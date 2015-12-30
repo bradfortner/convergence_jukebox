@@ -1,0 +1,1 @@
+Process,Close,convergenceplayer.exe
