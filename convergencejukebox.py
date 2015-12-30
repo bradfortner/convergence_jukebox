@@ -33,7 +33,7 @@ else:
     print "music directory does not exist."
     os.makedirs(str(os.path.dirname(full_path)) + "\music")
     master = Tk()
-    screen_message = "Program Stopped. Please place fifty mp3's in the Convergence Jukebox music directory at "\
+    screen_message = "Program Stopped. Please place fifty mp3's in the Convergence Jukebox music directory at " \
                      + str(os.path.dirname(full_path)) + "\music and then re-run the Convergence Jukebox software"
     msg = Message(master, text=screen_message)
     msg.config(bg='white', font=('times', 24, 'italic'), justify='center')
