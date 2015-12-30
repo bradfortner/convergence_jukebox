@@ -1,2 +1,1 @@
 run, convergencegui.exe
-ExitApp
