@@ -24,18 +24,17 @@ import datetime  # Used to convert song duration in seconds to minutes/seconds.
 import random
 import time  # Used in time_date_stamp. http://bit.ly/1MKPl5x and http://bit.ly/1HRKTMJ
 import pickle  # Used to save and reload python lists
-import sys  # Used for testing new code. Required to add sys.exit().
+# import sys  # Used for testing new code. Required to add sys.exit().
 from hsaudiotag import auto  # Used to work with MP3 ID3 data https://pypi.python.org/pypi/hsaudiotag
 from ctypes import *  # Used by playmp3.py windows based mp3 player http://bit.ly/1MgaGCh
-import csv
+# import csv
 import getpass  # Used to get user name http://stackoverflow.com/questions/4325416/how-do-i-get-the-username-in-python
-import re  # Used in searching Genre substrings. Specifically word-boundaries of regular expressions.
+# import re  # Used in searching Genre substrings. Specifically word-boundaries of regular expressions.
 from Tkinter import *  # Used as message to alert users to place MP3's in music folder
 
 computer_account_user_name = getpass.getuser()
 genre_file_changed = ""
 random_change_list = ""
-#got_artist = ""  # Used to select Artist in random play routine
 selectedArtists = []  # Used to select multiple artists in random play routine
 artistSelectRoutine = 0  # Used to break Artist
 artistSortRequired = "No"
@@ -50,29 +49,31 @@ flag_fourteen = ""
 flag_fourteen_change = ""
 output_list = []  # List is used to output information related to Jukebox functions. Contains information on songs
 song_list = []  # List is used to build final list of all songs including ID3 information and file location.
+
+
 # song_list info locations: songTitle = song_list[x][0], songArtist = song_list[x][1], songAlbum = song_list[x][2]
 # song_year = song_list[x][3], songDurationSeconds = song_list[x][4], songGenre = song_list[x][5],
 # songDurationTime = song_list[x][6], songComment = song_list[x][7]
 
-def set_up_user_files_first_time():
 
+def set_up_user_files_first_time():
     global full_path
-    full_path = os.path.realpath('__file__')  # http://stackoverflow.com/questions/5137497/find-current-directory-and-files-directory
-    artist_list =[]
+    full_path = os.path.realpath('__file__')  # http://bit.ly/1RQBZYF
+    artist_list = []
+    upcoming_list = []
 
     if os.path.exists(str(os.path.dirname(full_path)) + "\music"):
         print "music directory exists. Nothing to do here."
     else:
         print "music directory does not exist."
         os.makedirs(str(os.path.dirname(full_path)) + "\music")
-        print "Program Stopped. Please place some mp3's in the Convergence Jukebox music directory and then re-run the software"
         master = Tk()
-        whatever_you_do = "Program Stopped. Please place some mp3's in the Convergence Jukebox music directory and then re-run the software"
-        msg = Message(master, text = whatever_you_do)
-        msg.config(bg='white', font=('times', 24, 'italic'), justify = 'center')
+        whatever_you_do = "Program Stopped. Please place some mp3's in the Convergence Jukebox music directory /" \
+                          "and then re-run the software"
+        msg = Message(master, text=whatever_you_do)
+        msg.config(bg='white', font=('times', 24, 'italic'), justify='center')
         msg.pack()
-        mainloop( )
-        #sys.exit()
+        mainloop()
 
     if os.path.exists("log.txt"):
         print "log.txt exists. Nothing to do here."
@@ -85,7 +86,10 @@ def set_up_user_files_first_time():
         print "genre_flags.txt exists. Nothing to do here."
     else:
         genre_file = file("genre_flags.txt", "w")
-        genre_file.write("null,null,null,null,null,Starting Year,Ending Year,Select Artists A thru C,Select Artists D thru H,Select Artists I Thru M,Select Artists N Thru R,Select Artists S Thru V,Select Artists W Thru Z,Wednesday December 16 2015 12:44:11 PM")
+        genre_file.write("null,null,null,null,null,Starting Year,Ending Year,Select Artists A thru C,"
+                         + "Select Artists D thru H,Select Artists I Thru M,Select Artists N Thru R,"
+                         + "Select Artists S Thru V,Select Artists W Thru Z,"
+                         + "Wednesday December 16 2015 12:44:11 PM")
         genre_file.close()
         print "genre_flags.txt created."
 
@@ -139,10 +143,9 @@ def set_up_user_files_first_time():
         print "genre_last_timestamp.txt exists. Nothing to do here."
     else:
         genre_last_timestamp_file = file("genre_last_timestamp.txt", "w")
-        #genre_last_timestamp_file.write("Wednesday December 16 2015 12:44:11 PM")
         genre_last_timestamp_file.close()
         print "genre_last_timestamp_file created."
-        
+
 
 def write_jukebox_startup_to_log():
     time_date_stamp = datetime.datetime.now().strftime("%A. %d. %B %Y %I:%M%p")  # time_date_stamp. bit.ly/1MKPl5x
@@ -181,7 +184,7 @@ def genre_read_and_select_engine():  # Opens and reads genreFlags.csv file. Assi
     to_be_split = genre_file_open.read()
     print "genre_flags.txt file contains: ", to_be_split
     genre_file_open.close()
-    flag_file_input = to_be_split.split(",") # Split function explained at http://www.dotnetperls.com/split-python.
+    flag_file_input = to_be_split.split(",")  # Split function explained at http://www.dotnetperls.com/split-python.
 
     if flag_file_input[0] == "null":  # flag_one assigned.
         flag_one = "none"
@@ -255,10 +258,9 @@ def basic_random_list_generator():
         if re.search(r'\b' + norandom_check + r'\b', test_string):  # regex word boundaries http://bit.ly/1lSLXeP
 
             log_file_update = open("log.txt", "a+")  # new song_list added to log file.
-            log_file_update.write(str("Song " + str(song_list[y][1]) + " " + str(song_list[y][2]) \
-                              + " has not been added to random_list because it's marked norandom." + '\n'))
+            log_file_update.write(str("Song " + str(song_list[y][1]) + " " + str(song_list[y][2])
+                                      + " has not been added to random_list because it's marked norandom." + '\n'))
             log_file_update.close()
-            #sys.exit()
             y += 1
         else:
             random_list.append(y)  # adds song number to random_list
@@ -282,19 +284,19 @@ def count_number_mp3_songs():
     mp3_counter = 0
     full_path = os.path.realpath('__file__')
 
-    mp3_counter = len(glob.glob1(str(os.path.dirname(full_path)) + "\music", "*.mp3"))  # Counts number of MP3 files in library
+    mp3_counter = len(glob.glob1(str(os.path.dirname(full_path)) + "\music", "*.mp3"))  # Number of MP3 files in library
     current_file_count = int(mp3_counter)  # provides int output for later comparison
     if int(mp3_counter) == 0:
-        print "Program Stopped. Please place some mp3's in the Convergence Jukebox music directory and then re-run the software"
         master = Tk()
-        whatever_you_do = "Program Stopped. Please place some mp3's in the Convergence Jukebox music directory and then re-run the software"
-        msg = Message(master, text = whatever_you_do)
+        screen_message = "Program Stopped. Please place some mp3's in the Convergence Jukebox music directory " \
+                         + "and then re-run the software"
+        msg = Message(master, text=screen_message)
         msg.config(bg='white', font=('times', 24, 'italic'))
         msg.pack()
-        mainloop( )
+        mainloop()
         sys.exit()
 
-    past_mp3_file_count = open("file_count.txt", "r")  # Looks at number mp3 files from last run and looks for a difference
+    past_mp3_file_count = open("file_count.txt", "r")  # Compares mp3 files from last run and looks for a difference
     for last_file_count_a in past_mp3_file_count:
         print "The last time the Jukebox was run there were " + str(last_file_count_a) + " files on it."
     past_mp3_file_count.close()
@@ -318,7 +320,7 @@ def song_list_generator():
         log_file_entry = open("log.txt", "a+")  # new song_list added to log file.
         log_file_entry.write(str(time_date_stamp + ',' + 'New song_list generated' + ',' + '\n'))
         log_file_entry.close()
-        file_count_update = open("file_count.txt", "w+")  # Writes new filecount to filecount.txt file for next jukebox start.
+        file_count_update = open("file_count.txt", "w+")  # Writes new filecount to filecount.txt file for next start.
         s = str(current_file_count)
         file_count_update.write(s)
         file_count_update.close()
@@ -326,14 +328,15 @@ def song_list_generator():
         location_list = []  # Creates temporary location_list used for initial song file names for mp3 player.
         # File names later inserted in song_list to be used to play mp3's
         full_path = os.path.realpath('__file__')
-        for name in os.listdir(str(os.path.dirname(full_path)) + "\music" + "\\"):  # Reads all files in the /music directory
+        for name in os.listdir(str(os.path.dirname(full_path)) + "\music" + "\\"):  # Reads files in the music dir.
             if name.endswith(".mp3"):  # If statement searching for files with mp3 designation
                 title = name  # Name of mp3 transferred to title variable
                 location_list.append(title)  # Name of song appended to location_list
         x = 0  # hsaudiotag 1.1.1 code begins here to pull out ID3 information
         while x < len(location_list):  # Python List len function http://docs.python.org/2/library/functions.html#len
-            myfile = auto.File(str(os.path.dirname(full_path)) + "\music" + "\\" + location_list[x] + "")  # NOTE "" Quotes Required.
-            #  hsaudiotag function that assigns mp3 song to myfile object
+            myfile = auto.File(str(os.path.dirname(full_path)) + "\music" + "\\" + location_list[x] + "")
+            # Note "" Quotes Required in above string.
+            # hsaudiotag function that assigns mp3 song to myfile object
             titleorg = myfile.title  # Assigns above mp3 ID3 Title to titleorg variable
             artistorg = myfile.artist  # Assigns above mp3 ID3 Artist to artistorg variable
             albumorg = myfile.album  # Assigns above mp3 ID3 Album name to albumorg variable
@@ -364,7 +367,7 @@ def song_list_generator():
             build_list.append(x)
             build_list = []
             y = len(location_list) - x
-            print "Building play_list. Processing " + str(full_file_name) + ". " + str(y) + " files remaining to process."
+            print "Building play_list. Adding " + str(full_file_name) + ". " + str(y) + " files remaining to process."
             x += 1
         print len(song_list_generate)
 
@@ -567,7 +570,7 @@ def flag_printer():
     print "flag_eleven = " + str(flag_eleven)
     print "flag_twelve = " + str(flag_twelve)
     print "flag_thirteen = " + str(flag_thirteen)
-    print "flag_fourtenn = " + str(flag_fourteen)
+    print "flag_fourteen = " + str(flag_fourteen)
     print "flag_fourteen_change = " + str(flag_fourteen_change)
 
 
@@ -656,7 +659,6 @@ def multiple_year_random_sorter_no_genre():
 
 
 def single_year_random_sorter_no_genre():
-
     global flag_six
     global random_list
     year_list_sorter = random_list_with_year
@@ -750,10 +752,10 @@ def genre_by_year_random_sorter():
             if song_year_in_list == str(year_range):
                 year_remove_list.append(i)  # Adds to year_remove_list
         for i in year_remove_list:  # Loop uses year_remove_list generated above to remove songs from genre_remove_list.
-                counter = 0
-                if i in genre_remove_list:
-                    genre_remove_list.remove(i)  # Removes song numbers from genre_remove_list.
-                counter += 1
+            counter = 0
+            if i in genre_remove_list:
+                genre_remove_list.remove(i)  # Removes song numbers from genre_remove_list.
+            counter += 1
     else:  # Code for generating range of years starts here.
         print "Need To Process Year Range"  # Console message to confirm multi year range.
         x = int(flag_six)  # Start_year converted to integer.
@@ -771,10 +773,10 @@ def genre_by_year_random_sorter():
                 x += 1
         print str(len(year_remove_list)) + " songs to be remove_list so they can be placed at front of random_list."
         for i in year_remove_list:  # Uses year_remove_list to remove songs from genre_remove_list.
-                counter = 0
-                if i in genre_remove_list:
-                    genre_remove_list.remove(i)  # Removes song numbers from genre_remove_list.
-                counter += 1
+            counter = 0
+            if i in genre_remove_list:
+                genre_remove_list.remove(i)  # Removes song numbers from genre_remove_list.
+            counter += 1
     random.shuffle(random_list)  # List randomized.
     random.shuffle(genre_remove_list)  # List randomized.
     random.shuffle(year_remove_list)  # List randomized.
@@ -870,10 +872,10 @@ def artist_by_year_random_sorter():
             if song_year_in_list == str(year_range):
                 year_remove_list.append(i)  # Adds to year_remove_list
         for i in year_remove_list:  # Loop uses year_remove_list to remove songs from artist_remove_list.
-                counter = 0
-                if i in artist_remove_list:
-                    artist_remove_list.remove(i)  # Removes song numbers from artist_remove_list.
-                counter += 1
+            counter = 0
+            if i in artist_remove_list:
+                artist_remove_list.remove(i)  # Removes song numbers from artist_remove_list.
+            counter += 1
     if flag_six != "null" and flag_seven != "null":  # Code for generating range of years starts here.
         print "Need To Process Year Range"  # Console message to confirm multi year range.
         x = int(flag_six)  # Start_year converted to integer.
@@ -890,10 +892,10 @@ def artist_by_year_random_sorter():
                 x += 1
         print str(len(year_remove_list)) + " songs to be remove_list so they can be placed at front of random_list."
         for i in year_remove_list:  # Uses year_remove_list to remove songs from genre_remove_list.
-                counter = 0
-                if i in artist_remove_list:
-                    artist_remove_list.remove(i)  # Removes song numbers from genre_remove_list.
-                counter += 1
+            counter = 0
+            if i in artist_remove_list:
+                artist_remove_list.remove(i)  # Removes song numbers from genre_remove_list.
+            counter += 1
     random.shuffle(random_list)  # List randomized.
     random.shuffle(artist_remove_list)  # List randomized.
     random.shuffle(year_remove_list)  # List randomized.
@@ -932,18 +934,20 @@ def genre_year_artist_random_sort_engine():
                 or flag_twelve != "null" or flag_thirteen != "null":
             artist_by_year_random_sorter()
 
+
 def artist_list_generator():
-    artist_list =[]
-    x=0
+    artist_list = []
+    x = 0
     for i in song_list:
         if song_list[x][1] not in artist_list:
             artist_list.append(song_list[x][1])
-        x +=1
+        x += 1
     print artist_list
     artist_list_file_populate = open('artist_list.pkl', 'wb')
     pickle.dump(artist_list, artist_list_file_populate)
     artist_list_file_populate.close()
     print "artist_list.pkl populated."
+
 
 set_up_user_files_first_time()
 write_jukebox_startup_to_log()  # Writes Jukebox start time to log.
@@ -952,7 +956,7 @@ count_number_mp3_songs()  # Counts number of .mp3 files in /music.
 if not song_list:
     song_list_generator()
 artist_list_generator()
-os.system("gui_launch_py.exe") # Launches Convergence Jukebox GUI
+os.system("gui_launch_py.exe")  # Launches Convergence Jukebox GUI
 infinite_loop = 1  # Jukebox infinite loop.
 while infinite_loop == 1:  # This infinite loop is the mp3 playback engine for the Jukebox. http://bit.ly/1vHqVkJ
     play_list_loader()  # Loads paid play_list
