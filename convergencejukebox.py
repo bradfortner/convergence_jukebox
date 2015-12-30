@@ -22,6 +22,29 @@ import os
 from Tkinter import *
 import glob
 import sys
+import time
+
+print "Welcome To Convergence Jukebox"
+print "Your Jukebox Is Being Congigured"
+print "This Could Take A Few Minutes"
+print
+print "Convergence Jukebox is Python based codes that emulates a Jukebox and plays mp3 media."
+print "Copyright (C) 2012 by Brad Fortner"
+print "This program is free software you can redistribute it and/or modify it under the terms"
+print "of the GNU General Public License as published by the Free Software Foundation;"
+print "either version 3 of the License, or (at your option) any later version."
+print "This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied"
+print "warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details."
+print "You should have received a copy of the GNU General Public License along with this program."
+print "If not, see http://www.gnu.org/licenses."
+print "The authour, information on, executable downloads and source code can be obtained via www.convergencejukebox.com"
+
+print "Convergence Jukebox employs the PyRSS2Gen Python Library."
+print "PyRSS2Gen is copyright (c) by Andrew Dalke Scientific, AB (previously"
+print "Dalke Scientific Software, LLC) and is released under the BSD license."
+print "Info on PyRSS2Gen at http://www.dalkescientific.com/Python/PyRSS2Gen.html"
+
+time.sleep(10)
 
 full_path = os.path.realpath(
     '__file__')  # http://stackoverflow.com/questions/5137497/find-current-directory-and-files-directory
