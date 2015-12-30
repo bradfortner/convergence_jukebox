@@ -32,6 +32,10 @@ import getpass  # Used to get user name http://stackoverflow.com/questions/43254
 # import re  # Used in searching Genre substrings. Specifically word-boundaries of regular expressions.
 from Tkinter import *  # Used as message to alert users to place MP3's in music folder
 
+print "Welcome To Convergence Jukebox"
+print "Your Jukebox Is Being Congigured"
+print "This Could Take A Few Minutes"
+
 computer_account_user_name = getpass.getuser()
 genre_file_changed = ""
 random_change_list = ""
@@ -914,6 +918,10 @@ def artist_by_year_random_sorter():
 
 
 def genre_year_artist_random_sort_engine():
+    if flag_one == "none" and flag_six == "null" and flag_seven == "null" and flag_eight == "null" \
+            and flag_nine == "null" and flag_ten == "null" and flag_eleven == "null" and flag_twelve == "null" \
+            and flag_thirteen == "null":
+        no_flag_random_sort()
     if flag_one != "none" and flag_six == "null" and flag_seven == "null" and flag_eight == "null" \
             and flag_nine == "null" and flag_ten == "null" and flag_eleven == "null" and flag_twelve == "null" \
             and flag_thirteen == "null":
@@ -942,12 +950,14 @@ def artist_list_generator():
         if song_list[x][1] not in artist_list:
             artist_list.append(song_list[x][1])
         x += 1
-    print artist_list
     artist_list_file_populate = open('artist_list.pkl', 'wb')
     pickle.dump(artist_list, artist_list_file_populate)
     artist_list_file_populate.close()
     print "artist_list.pkl populated."
 
+
+def no_flag_random_sort():
+    random.shuffle(random_list)
 
 def gui_launch():
     if os.path.exists(str(os.path.dirname(full_path)) + "\convergencegui.py"):
