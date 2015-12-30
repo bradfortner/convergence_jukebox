@@ -1,3 +1,18 @@
+# Convergence Jukebox is Python based codes that emulates a Jukebox and plays mp3 media
+# Copyright (C) 2012 by Brad Fortner
+# This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+# This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+# warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+# You should have received a copy of the GNU General Public License along with this program.  If not, see http://www.gnu.org/licenses.
+# The authour, information on, executable downloads and source code can be obtained via www.convergencejukebox.com
+# Convergence Jukebox employs the hsaudiotag Python library which is released under an OSI BSD licence.
+# hsaudiotag see: https://pypi.python.org/pypi/hsaudiotag
+# Convergence Jukebox employs the playmp3.py Python library for windows Copyright (c) 2011 by James K. Lawless
+# playmp3.py has been released under an MIT / X11 licence. See: http://www.mailsend-online.com/license.php.
+# Convergence Jukebox employs the PyRSS2Gen Python Library. PyRSS2Gen is copyright (c) by Andrew Dalke Scientific, AB (previously
+# Dalke Scientific Software, LLC) and is released under the BSD license. http://www.dalkescientific.com/Python/PyRSS2Gen.html
+
 import pickle  # Used to save and reload python lists.
 # from Tkinter import *
 # import FixTk
