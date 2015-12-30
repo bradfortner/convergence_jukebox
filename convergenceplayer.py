@@ -949,6 +949,13 @@ def artist_list_generator():
     print "artist_list.pkl populated."
 
 
+def gui_launch():
+    if os.path.exists(str(os.path.dirname(full_path)) + "\convergencegui.py"):
+        print ".py directory exists at " + str(os.path.dirname(full_path)) + "\convergenceplayer.py"
+        os.system("gui_launch_py.exe")  # Launches Convergence Jukebox GUI
+    else:
+        os.system("gui_launch.exe")  # Launches Convergence Jukebox GUI
+
 set_up_user_files_first_time()
 write_jukebox_startup_to_log()  # Writes Jukebox start time to log.
 genre_read_and_select_engine()  # Invokes and builds lists for random play genre selection process.
@@ -956,7 +963,8 @@ count_number_mp3_songs()  # Counts number of .mp3 files in /music.
 if not song_list:
     song_list_generator()
 artist_list_generator()
-os.system("gui_launch_py.exe")  # Launches Convergence Jukebox GUI
+gui_launch()
+
 infinite_loop = 1  # Jukebox infinite loop.
 while infinite_loop == 1:  # This infinite loop is the mp3 playback engine for the Jukebox. http://bit.ly/1vHqVkJ
     play_list_loader()  # Loads paid play_list
