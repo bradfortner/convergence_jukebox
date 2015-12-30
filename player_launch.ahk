@@ -1,0 +1,2 @@
+run, convergenceplayer.exe
+ExitApp
