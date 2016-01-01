@@ -25,7 +25,7 @@ import sys
 import time
 
 print "Welcome To Convergence Jukebox"
-print "Your Jukebox Is Being Congigured"
+print "Your Jukebox Is Being Configured"
 print "This Could Take A Few Minutes"
 print
 print "Convergence Jukebox is Python based codes that emulates a Jukebox and plays mp3 media."
@@ -46,8 +46,7 @@ print "Info on PyRSS2Gen at http://www.dalkescientific.com/Python/PyRSS2Gen.html
 
 time.sleep(10)
 
-full_path = os.path.realpath(
-    '__file__')  # http://stackoverflow.com/questions/5137497/find-current-directory-and-files-directory
+full_path = os.path.realpath('__file__')  # http://bit.ly/1RQBZYF
 artist_list = []
 
 if os.path.exists(str(os.path.dirname(full_path)) + "\music"):
