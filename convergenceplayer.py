@@ -33,7 +33,7 @@ import getpass  # Used to get user name http://stackoverflow.com/questions/43254
 from Tkinter import *  # Used as message to alert users to place MP3's in music folder
 
 print "Welcome To Convergence Jukebox"
-print "Your Jukebox Is Being Congigured"
+print "Your Jukebox Is Being Configured"
 print "This Could Take A Few Minutes"
 
 computer_account_user_name = getpass.getuser()
@@ -53,7 +53,6 @@ flag_fourteen = ""
 flag_fourteen_change = ""
 output_list = []  # List is used to output information related to Jukebox functions. Contains information on songs
 song_list = []  # List is used to build final list of all songs including ID3 information and file location.
-
 
 # song_list info locations: songTitle = song_list[x][0], songArtist = song_list[x][1], songAlbum = song_list[x][2]
 # song_year = song_list[x][3], songDurationSeconds = song_list[x][4], songGenre = song_list[x][5],
@@ -112,12 +111,14 @@ def set_up_user_files_first_time():
         song_list_file_create.close()
         print "song_list.pkl created."
 
-    if os.path.exists("output_list.pkl"):
-        print "output_list.pkl exists. Nothing to do here."
+    if os.path.exists("output_list.txt"):
+        print "output_list.txt exists. Nothing to do here."
     else:
-        output_list_file_create = file("output_list.pkl", "wb")
+        output_list_file_create = file("output_list.txt", "w")
+        output_list_file_create.write("Convergence Jukebox,Brad Fortner,www.convergencejukebox.com,2012,2016,GNU General Public License V3")
+
         output_list_file_create.close()
-        print "output_list.pkl created."
+        print "output_list.txt created."
 
     if os.path.exists("play_list.pkl"):
         print "play_list.pkl exists. Nothing to do here."
@@ -157,7 +158,12 @@ def write_jukebox_startup_to_log():
     log_file_entry = open("log.txt", "a+")
     log_file_entry.write(str(time_date_stamp + ',' + 'Jukebox Started For Day' + ',' + '\n'))
     log_file_entry.close()
-    # print computer_account_user_name.lower()
+    # Code below writes log entry to computers dropbox public directory for remote log access
+    if os.path.exists(str(os.path.dirname("c:\\users\\" + computer_account_user_name + "\\Dropbox\\public\\"))):
+        log_file_entry = open("c:\\users\\" + computer_account_user_name + "\\Dropbox\\public\\"
+                              + computer_account_user_name.lower() + "log.txt", "a+")
+        log_file_entry.write(str(time_date_stamp + ',' + 'Jukebox Started For Day' + ',' + '\n'))
+        log_file_entry.close()
 
 
 def genre_read_and_select_engine():  # Opens and reads genreFlags.csv file. Assigns genres to random play functionality.
@@ -184,10 +190,17 @@ def genre_read_and_select_engine():  # Opens and reads genreFlags.csv file. Assi
     global flag_fourteen
     global flag_fourteen_change
 
-    genre_file_open = open("genre_flags.txt", 'r+')
-    to_be_split = genre_file_open.read()
+    # Code below reads genre_flags.txt from computers dropbox public directory. Allows for remote genre changes.
+    if os.path.exists(str(os.path.dirname("c:\\users\\" + computer_account_user_name + "\\Dropbox\\public\\genre_flags.txt"))):
+        genre_file_open = open("c:\\users\\" + computer_account_user_name + "\\Dropbox\\public\\" + "genre_flags.txt", 'r+')
+        to_be_split = genre_file_open.read()
+        genre_file_open.close()
+    else:
+        genre_file_open = open("genre_flags.txt", 'r+')
+        to_be_split = genre_file_open.read()
+        genre_file_open.close()
     print "genre_flags.txt file contains: ", to_be_split
-    genre_file_open.close()
+
     flag_file_input = to_be_split.split(",")  # Split function explained at http://www.dotnetperls.com/split-python.
 
     if flag_file_input[0] == "null":  # flag_one assigned.
@@ -265,6 +278,15 @@ def basic_random_list_generator():
             log_file_update.write(str("Song " + str(song_list[y][1]) + " " + str(song_list[y][2])
                                       + " has not been added to random_list because it's marked norandom." + '\n'))
             log_file_update.close()
+
+            # Code below writes log entry to computers dropbox public directory for remote log access
+            if os.path.exists(str(os.path.dirname("c:\\users\\" + computer_account_user_name + "\\Dropbox\\public\\"))):
+                log_file_update = open("c:\\users\\" + computer_account_user_name + "\\Dropbox\\public\\"
+                                      + computer_account_user_name.lower() + "log.txt", "a+")
+                log_file_update.write(str("Song " + str(song_list[y][1]) + " " + str(song_list[y][2])
+                                      + " has not been added to random_list because it's marked norandom." + '\n'))
+                log_file_update.close()
+
             y += 1
         else:
             random_list.append(y)  # adds song number to random_list
@@ -324,6 +346,12 @@ def song_list_generator():
         log_file_entry = open("log.txt", "a+")  # new song_list added to log file.
         log_file_entry.write(str(time_date_stamp + ',' + 'New song_list generated' + ',' + '\n'))
         log_file_entry.close()
+        # Code below writes log entry to computers dropbox public directory for remote log access
+        if os.path.exists(str(os.path.dirname("c:\\users\\" + computer_account_user_name + "\\Dropbox\\public\\"))):
+            log_file_update = open("c:\\users\\" + computer_account_user_name + "\\Dropbox\\public\\"
+                                  + computer_account_user_name.lower() + "log.txt", "a+")
+            log_file_update.write(str(time_date_stamp + ',' + 'New song_list generated' + ',' + '\n'))
+            log_file_update.close()
         file_count_update = open("file_count.txt", "w+")  # Writes new filecount to filecount.txt file for next start.
         s = str(current_file_count)
         file_count_update.write(s)
@@ -371,7 +399,8 @@ def song_list_generator():
             build_list.append(x)
             build_list = []
             y = len(location_list) - x
-            print "Building play_list. Adding " + str(full_file_name) + ". " + str(y) + " files remaining to process."
+            print "www.convergencejukebox.com Building your database " + str(full_file_name) + ". " + str(y) + \
+                  " files remaining to process."
             x += 1
         print len(song_list_generate)
 
@@ -390,33 +419,27 @@ def play_random_song():
     print "Artist: " + artist
     print "Album: " + album
     print "Year Released: " + year + " Time: " + time
-    output_prep_list = []
-    output_list = []
-    output_prep_list.append(title)
-    output_prep_list.append(artist)
-    output_prep_list.append(year)
-    output_prep_list.append(time)
-    output_prep_list.append(album)
-    output_prep_list.append(mode)
-    output_list.append(output_prep_list)
-    output_list_save = open('output_list.pkl', 'wb')
-    pickle.dump(output_list, output_list_save)
+    output_prep = title + "," + artist + "," + album + "," + year + "," + time + "," + mode
+    output_list_save = open("output_list.txt", "w")
+    output_list_save.write(str(output_prep))
     output_list_save.close()
     time_date_stamp = datetime.datetime.now().strftime("%A. %d. %B %Y %I:%M%p")
-
     log_file_entry = open("log.txt", "a+")
     log_file_entry.write(str(time_date_stamp + ',' + str(song_list[x][8]) + ',' + str(mode) + ',' + '0' + '\n'))
     log_file_entry.close()
-
+    # Code below writes log entry to computers dropbox public directory for remote log access
+    if os.path.exists(str(os.path.dirname("c:\\users\\" + computer_account_user_name + "\\Dropbox\\public\\"))):
+        log_file_update = open("c:\\users\\" + computer_account_user_name + "\\Dropbox\\public\\"
+                              + computer_account_user_name.lower() + "log.txt", "a+")
+        log_file_update.write(str(time_date_stamp + ',' + str(song_list[x][8]) + ',' + str(mode) + ',' + '0' + '\n'))
+        log_file_update.close()
     full_path = os.path.realpath('__file__')
     print "Now playing: " + str(x)
     playMP3(str(os.path.dirname(full_path)) + '\music' + '\\\\' + song_list[x][8])  # Plays song using mp3Play.
     # info on mp3Play at http://www.mailsend-online.com/blog/play-mp3-files-with-python-on-windows.html
-    # info at https://en.wikibooks.org/wiki/Python_Programming/Lists#Removing
 
 
 def random_delete_song():
-    print "Entering random_delete_song():"
     # next four lines write jukebox startup to log.txt
     # Timestamp info at http://stackoverflow.com/questions/13890935/timestamp-python
     time_date_stamp = datetime.datetime.now().strftime("%A. %d. %B %Y %I:%M%p")
@@ -424,19 +447,22 @@ def random_delete_song():
     log_file_entry = open("log.txt", "a+")
     log_file_entry.write(str(time_date_stamp + ',' + 'Skipped norandom song: ' + str(song_list[x][8]) + '\n'))
     log_file_entry.close()
+    # Code below writes log entry to computers dropbox public directory for remote log access
+    if os.path.exists(str(os.path.dirname("c:\\users\\" + computer_account_user_name + "\\Dropbox\\public\\"))):
+        log_file_update = open("c:\\users\\" + computer_account_user_name + "\\Dropbox\\public\\"
+                              + computer_account_user_name.lower() + "log.txt", "a+")
+        log_file_update.write(str(time_date_stamp + ',' + 'Skipped norandom song: ' + str(song_list[x][8]) + '\n'))
+        log_file_update.close()
 
     del random_list[0]  # Deletes (removes) first element (song just played) from random_list.
-    print "Leaving random_delete_song():"
+    # info at https://en.wikibooks.org/wiki/Python_Programming/Lists#Removing
 
 
 def play_list_loader():
     global play_list
-
     play_list_recover = open('play_list.pkl', 'rb')  # Loads play_list.
     play_list = pickle.load(play_list_recover)
     play_list_recover.close()
-
-    print play_list
     return play_list
 
 
@@ -444,7 +470,6 @@ def play_list_player():
     global play_list
     # This statement runs songs in play_list, deletes first song in play_list after it completes
     #  playing song and finally opens play_list to see if any new songs have appeared.
-    print "Entering play_list_player():"
     print "Song in play_list: " + str(play_list[0])
     x = play_list[0]
     print x
@@ -460,26 +485,22 @@ def play_list_player():
     print "Artist: " + artist
     print "Album: " + album
     print "Year Released: " + year + " Time: " + time
-    output_prep_list = []
-    output_list = []
-    output_prep_list.append(title)
-    output_prep_list.append(artist)
-    output_prep_list.append(year)
-    output_prep_list.append(time)
-    output_prep_list.append(album)
-    output_prep_list.append(mode)
-    output_list.append(output_prep_list)
-    output_list_save = open('output_list.pkl', 'wb')
-    pickle.dump(output_list, output_list_save)
+    output_prep = title + "," + artist + "," + album + "," + year + "," + time + "," + mode
+    output_list_save = open("output_list.txt", "w")
+    output_list_save.write(str(output_prep))
     output_list_save.close()
     time_date_stamp = datetime.datetime.now().strftime("%A. %d. %B %Y %I:%M%p")
-
     log_file_entry = open("log.txt", "a+")
     comma_removal = str(song_list[x][8])
     comma_free_title = comma_removal.replace(',', '')  # http://bit.ly/1SuAnRh
     log_file_entry.write(str(time_date_stamp + ',' + str(comma_free_title) + ',' + str(mode) + ',' + '1' + '\n'))
     log_file_entry.close()
-
+    # Code below writes log entry to computers dropbox public directory for remote log access
+    if os.path.exists(str(os.path.dirname("c:\\users\\" + computer_account_user_name + "\\Dropbox\\public\\"))):
+        log_file_update = open("c:\\users\\" + computer_account_user_name + "\\Dropbox\\public\\"
+                              + computer_account_user_name.lower() + "log.txt", "a+")
+        log_file_update.write(str(time_date_stamp + ',' + str(comma_free_title) + ',' + str(mode) + ',' + '1' + '\n'))
+        log_file_update.close()
     del comma_free_title
     del comma_removal
     upcoming_list_recover = open('upcoming_list.pkl', 'rb')
@@ -508,7 +529,6 @@ def play_list_player():
     play_list_save.close()
     if len(play_list) > 0:  # Checks for any paid songs to play
         play_list_player()  # Plays paid songs
-    print "Exiting play_list_player():"
 
 
 def random_mode_playback():
@@ -529,15 +549,22 @@ def random_mode_playback():
 def genre_file_change_detector():
     global random_list
     global computer_account_user_name
-    print computer_account_user_name
     f = open('genre_last_timestamp.txt', 'r+')  # Reading timestamp.txt file
     genre_last_timestamp = f.read()
     f.close()
 
-    f = open("genre_flags.txt", 'r+')
-    flags_file_read = f.read()
-    f.close()
-    flag_file_input = flags_file_read.split(",")
+    # Code below reads genre_flags.txt from computers dropbox public directory. Allows for remote genre changes.
+    if os.path.exists(str(os.path.dirname("c:\\users\\" + computer_account_user_name + "\\Dropbox\\public\\genre_flags.txt"))):
+        genre_file_open = open("c:\\users\\" + computer_account_user_name + "\\Dropbox\\public\\" + "genre_flags.txt", 'r+')
+        to_be_split = genre_file_open.read()
+        genre_file_open.close()
+    else:
+        genre_file_open = open("genre_flags.txt", 'r+')
+        to_be_split = genre_file_open.read()
+        genre_file_open.close()
+    print "genre_flags.txt file contains: ", to_be_split
+
+    flag_file_input = to_be_split.split(",")
     if genre_last_timestamp != flag_file_input[13]:  # Looking for change to time/date stamp.
         genre_last_timestamp = flag_file_input[13]
         f = open('genre_last_timestamp.txt', 'w')  # Reading timestamp.txt file
@@ -953,11 +980,11 @@ def artist_list_generator():
     artist_list_file_populate = open('artist_list.pkl', 'wb')
     pickle.dump(artist_list, artist_list_file_populate)
     artist_list_file_populate.close()
-    print "artist_list.pkl populated."
 
 
 def no_flag_random_sort():
     random.shuffle(random_list)
+
 
 def gui_launch():
     if os.path.exists(str(os.path.dirname(full_path)) + "\convergencegui.py"):
