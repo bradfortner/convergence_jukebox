@@ -24,12 +24,11 @@ import datetime  # Used to convert song duration in seconds to minutes/seconds.
 import random
 import time  # Used in time_date_stamp. http://bit.ly/1MKPl5x and http://bit.ly/1HRKTMJ
 import pickle  # Used to save and reload python lists
-# import sys  # Used for testing new code. Required to add sys.exit().
+import sys  # Used for testing new code. Required to add sys.exit().
 from hsaudiotag import auto  # Used to work with MP3 ID3 data https://pypi.python.org/pypi/hsaudiotag
 from ctypes import *  # Used by playmp3.py windows based mp3 player http://bit.ly/1MgaGCh
-# import csv
 import getpass  # Used to get user name http://stackoverflow.com/questions/4325416/how-do-i-get-the-username-in-python
-# import re  # Used in searching Genre substrings. Specifically word-boundaries of regular expressions.
+import re  # Used in searching Genre substrings. Specifically word-boundaries of regular expressions.
 from Tkinter import *  # Used as message to alert users to place MP3's in music folder
 
 print "Welcome To Convergence Jukebox"
@@ -71,9 +70,9 @@ def set_up_user_files_first_time():
         print "music directory does not exist."
         os.makedirs(str(os.path.dirname(full_path)) + "\music")
         master = Tk()
-        whatever_you_do = "Program Stopped. Please place some mp3's in the Convergence Jukebox music directory /" \
-                          "and then re-run the software"
-        msg = Message(master, text=whatever_you_do)
+        screen_message = "Program Stopped. Please place fifty mp3's in the Convergence Jukebox music directory at " \
+                     + str(os.path.dirname(full_path)) + "\music and then re-run the Convergence Jukebox software"
+        msg = Message(master, text=screen_message)
         msg.config(bg='white', font=('times', 24, 'italic'), justify='center')
         msg.pack()
         mainloop()
@@ -314,8 +313,8 @@ def count_number_mp3_songs():
     current_file_count = int(mp3_counter)  # provides int output for later comparison
     if int(mp3_counter) == 0:
         master = Tk()
-        screen_message = "Program Stopped. Please place some mp3's in the Convergence Jukebox music directory " \
-                         + "and then re-run the software"
+        screen_message = "Program Stopped. Please place fifty mp3's in the Convergence Jukebox music directory at " \
+                     + str(os.path.dirname(full_path)) + "\music and then re-run the Convergence Jukebox software"
         msg = Message(master, text=screen_message)
         msg.config(bg='white', font=('times', 24, 'italic'))
         msg.pack()
