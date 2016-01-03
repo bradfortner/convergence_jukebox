@@ -28,6 +28,7 @@ import PyRSS2Gen  # Used n RSS generation.
 import getpass  # Gets user name http://stackoverflow.com/questions/4325416/how-do-i-get-the-username-in-python.
 import os
 import os.path, time
+import sys  # Used to check and switch resolutions for convergence jukebox.
 from ctypes import *  # Used by playmp3.py windows based mp3 player.
 # http://www.mailsend-online.com/blog/play-mp3-files-with-python-on-windows.html
 
@@ -2008,39 +2009,169 @@ def rss_writer():  # This function writes rss feeds to Dropbox public directory.
                            + computer_account_user_name.lower() + "_artist_current_song.xml", "w"))
 
 
-
-
 def check_for_file_change():
     global file_time_old
-    time_now = datetime.datetime.now()
-    log_file_entry = open("log.txt", "a+")
-    log_file_entry.write(str(time_now) + " tick-tock - Jukebox display after filechange check.\n")
-    log_file_entry.close()
-    # Code below writes log entry to computers dropbox public directory for remote log access
-    if os.path.exists(str(os.path.dirname("c:\\users\\" + computer_account_user_name + "\\Dropbox\\public\\"))):
-        log_file_entry = open("c:\\users\\" + computer_account_user_name + "\\Dropbox\\public\\"
-                              + computer_account_user_name.lower() + "log.txt", "a+")
-        log_file_entry.write(str(time_now) + " tick-tock - Jukebox display after filechange check.\n")
-        log_file_entry.close()
     file_time_check = str(time.ctime(os.path.getmtime("output_list.txt")))  # http://bit.ly/22zKqLS
-    if file_time_old == file_time_check:
-        print "File Times Are The Same"
-        print
-    else:
-        print "File Times Are Different"
-        print
-        screen_display()
-        rss_writer() # To Be Added
+    if file_time_old != file_time_check:
+        screen_display()  # Updates screen based on file change.
+        rss_writer()
         file_time_old = file_time_check
     jukebox_display.after(5000, check_for_file_change)
 
+
 def so_long(event=None):
+    set_default_screen_resolution()
     if os.path.exists(str(os.path.dirname(full_path)) + "\convergenceplayer.py"):
         os.system("player_quit_py.exe")  # Launches Convergence Jukebox Player
         jukebox_display.destroy()
     else:
         os.system("taskkill /im convergenceplayer.exe")
         jukebox_display.destroy()
+
+
+def set_default_screen_resolution():
+
+    class ScreenRes(object):  # http://bit.ly/1R6CXjF
+        @classmethod
+        def set(cls, width=None, height=None, depth=32):
+            '''
+            Set the primary display to the specified mode
+            '''
+            if width and height:
+                print('Setting resolution to {}x{}'.format(width, height, depth))
+            else:
+                print('Setting resolution to defaults')
+
+            if sys.platform == 'win32':
+                cls._win32_set(width, height, depth)
+            elif sys.platform.startswith('linux'):
+                cls._linux_set(width, height, depth)
+            elif sys.platform.startswith('darwin'):
+                cls._osx_set(width, height, depth)
+
+        @classmethod
+        def get(cls):
+            if sys.platform == 'win32':
+                return cls._win32_get()
+            elif sys.platform.startswith('linux'):
+                return cls._linux_get()
+            elif sys.platform.startswith('darwin'):
+                return cls._osx_get()
+
+        @classmethod
+        def get_modes(cls):
+            if sys.platform == 'win32':
+                return cls._win32_get_modes()
+            elif sys.platform.startswith('linux'):
+                return cls._linux_get_modes()
+            elif sys.platform.startswith('darwin'):
+                return cls._osx_get_modes()
+
+        @staticmethod
+        def _win32_get_modes():
+            '''
+            Get the primary windows display width and height
+            '''
+            import win32api
+            from pywintypes import DEVMODEType, error
+            modes = []
+            i = 0
+            try:
+                while True:
+                    mode = win32api.EnumDisplaySettings(None, i)
+                    modes.append((
+                        int(mode.PelsWidth),
+                        int(mode.PelsHeight),
+                        int(mode.BitsPerPel),
+                        ))
+                    i += 1
+            except error:
+                pass
+
+            return modes
+
+        @staticmethod
+        def _win32_get():
+            '''
+            Get the primary windows display width and height
+            '''
+            import ctypes
+            user32 = ctypes.windll.user32
+            screensize = (
+                user32.GetSystemMetrics(0),
+                user32.GetSystemMetrics(1),
+                )
+            return screensize
+
+        @staticmethod
+        def _win32_set(width=None, height=None, depth=32):
+            '''
+            Set the primary windows display to the specified mode
+            '''
+            # Gave up on ctypes, the struct is really complicated
+            #user32.ChangeDisplaySettingsW(None, 0)
+            import win32api
+            from pywintypes import DEVMODEType
+            if width and height:
+
+                if not depth:
+                    depth = 32
+
+                mode = win32api.EnumDisplaySettings()
+                mode.PelsWidth = width
+                mode.PelsHeight = height
+                mode.BitsPerPel = depth
+
+                win32api.ChangeDisplaySettings(mode, 0)
+            else:
+                win32api.ChangeDisplaySettings(None, 0)
+
+
+        @staticmethod
+        def _win32_set_default():
+            '''
+            Reset the primary windows display to the default mode
+            '''
+            # Interesting since it doesn't depend on pywin32
+            import ctypes
+            user32 = ctypes.windll.user32
+            # set screen size
+            user32.ChangeDisplaySettingsW(None, 0)
+
+        @staticmethod
+        def _linux_set(width=None, height=None, depth=32):
+            raise NotImplementedError()
+
+        @staticmethod
+        def _linux_get():
+            raise NotImplementedError()
+
+        @staticmethod
+        def _linux_get_modes():
+            raise NotImplementedError()
+
+        @staticmethod
+        def _osx_set(width=None, height=None, depth=32):
+            raise NotImplementedError()
+
+        @staticmethod
+        def _osx_get():
+            raise NotImplementedError()
+
+        @staticmethod
+        def _osx_get_modes():
+            raise NotImplementedError()
+
+
+    if __name__ == '__main__':
+        print('Primary screen resolution: {}x{}'.format(
+            *ScreenRes.get()
+            ))
+        print(ScreenRes.get_modes())
+        # ScreenRes.set(1280, 720)
+        # ScreenRes.set(1920, 1080)
+        ScreenRes.set() # Set defaults
+
 
 file_time_old = "Wed Dec 30 22:56:15 2015"
 cursor_position = 0  # Between 0 and end of mp3 library. Used to define what song button is selected
