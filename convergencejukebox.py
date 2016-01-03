@@ -23,6 +23,308 @@ from Tkinter import *
 import glob
 import sys
 import time
+import ctypes
+
+def get_available_resolutions():
+
+    class ScreenRes(object):  # http://bit.ly/1R6CXjF
+        @classmethod
+        def set(cls, width=None, height=None, depth=32):
+            '''
+            Set the primary display to the specified mode
+            '''
+            if width and height:
+                print('Setting resolution to {}x{}'.format(width, height, depth))
+            else:
+                print('Setting resolution to defaults')
+
+            if sys.platform == 'win32':
+                cls._win32_set(width, height, depth)
+            elif sys.platform.startswith('linux'):
+                cls._linux_set(width, height, depth)
+            elif sys.platform.startswith('darwin'):
+                cls._osx_set(width, height, depth)
+
+        @classmethod
+        def get(cls):
+            if sys.platform == 'win32':
+                return cls._win32_get()
+            elif sys.platform.startswith('linux'):
+                return cls._linux_get()
+            elif sys.platform.startswith('darwin'):
+                return cls._osx_get()
+
+        @classmethod
+        def get_modes(cls):
+            if sys.platform == 'win32':
+                return cls._win32_get_modes()
+            elif sys.platform.startswith('linux'):
+                return cls._linux_get_modes()
+            elif sys.platform.startswith('darwin'):
+                return cls._osx_get_modes()
+
+        @staticmethod
+        def _win32_get_modes():
+            '''
+            Get the primary windows display width and height
+            '''
+            import win32api
+            from pywintypes import DEVMODEType, error
+            modes = []
+            i = 0
+            try:
+                while True:
+                    mode = win32api.EnumDisplaySettings(None, i)
+                    modes.append((
+                        int(mode.PelsWidth),
+                        int(mode.PelsHeight),
+                        int(mode.BitsPerPel),
+                        ))
+                    i += 1
+            except error:
+                pass
+
+            return modes
+
+        @staticmethod
+        def _win32_get():
+            '''
+            Get the primary windows display width and height
+            '''
+            import ctypes
+            user32 = ctypes.windll.user32
+            screensize = (
+                user32.GetSystemMetrics(0),
+                user32.GetSystemMetrics(1),
+                )
+            return screensize
+
+        @staticmethod
+        def _win32_set(width=None, height=None, depth=32):
+            '''
+            Set the primary windows display to the specified mode
+            '''
+            # Gave up on ctypes, the struct is really complicated
+            #user32.ChangeDisplaySettingsW(None, 0)
+            import win32api
+            from pywintypes import DEVMODEType
+            if width and height:
+
+                if not depth:
+                    depth = 32
+
+                mode = win32api.EnumDisplaySettings()
+                mode.PelsWidth = width
+                mode.PelsHeight = height
+                mode.BitsPerPel = depth
+
+                win32api.ChangeDisplaySettings(mode, 0)
+            else:
+                win32api.ChangeDisplaySettings(None, 0)
+
+
+        @staticmethod
+        def _win32_set_default():
+            '''
+            Reset the primary windows display to the default mode
+            '''
+            # Interesting since it doesn't depend on pywin32
+            import ctypes
+            user32 = ctypes.windll.user32
+            # set screen size
+            user32.ChangeDisplaySettingsW(None, 0)
+
+        @staticmethod
+        def _linux_set(width=None, height=None, depth=32):
+            raise NotImplementedError()
+
+        @staticmethod
+        def _linux_get():
+            raise NotImplementedError()
+
+        @staticmethod
+        def _linux_get_modes():
+            raise NotImplementedError()
+
+        @staticmethod
+        def _osx_set(width=None, height=None, depth=32):
+            raise NotImplementedError()
+
+        @staticmethod
+        def _osx_get():
+            raise NotImplementedError()
+
+        @staticmethod
+        def _osx_get_modes():
+            raise NotImplementedError()
+
+
+    if __name__ == '__main__':
+        print('Primary screen resolution: {}x{}'.format(
+            *ScreenRes.get()
+            ))
+        # print(ScreenRes.get_modes())
+        available_resolutions = (ScreenRes.get_modes())
+        # print available_resolutions
+        if (1280, 720, 32) in (ScreenRes.get_modes()):
+            print "I'm 720p compatable continuing Convergence Jukebox"
+        else:
+            print "I'm not 720p compatable"
+            master = Tk()
+            screen_message = "Program Stopped. This computer is not 1280 by 720 (720p) compatable." \
+                             " 720p is the default resolution for Convergence Jukebox. This means Convergence Jukebox" \
+                             " will not run on this computer. Consult www.convergencejukebox.com if you want more" \
+                             " details and a potential fix to the problem."
+            msg = Message(master, text=screen_message)
+            msg.config(bg='white', font=('times', 24, 'italic'), justify='center')
+            msg.pack()
+            mainloop()
+            sys.exit()
+
+
+def set_720_resolution():
+
+    class ScreenRes(object):  # http://bit.ly/1R6CXjF
+        @classmethod
+        def set(cls, width=None, height=None, depth=32):
+            '''
+            Set the primary display to the specified mode
+            '''
+            if width and height:
+                print('Setting resolution to {}x{}'.format(width, height, depth))
+            else:
+                print('Setting resolution to defaults')
+
+            if sys.platform == 'win32':
+                cls._win32_set(width, height, depth)
+            elif sys.platform.startswith('linux'):
+                cls._linux_set(width, height, depth)
+            elif sys.platform.startswith('darwin'):
+                cls._osx_set(width, height, depth)
+
+        @classmethod
+        def get(cls):
+            if sys.platform == 'win32':
+                return cls._win32_get()
+            elif sys.platform.startswith('linux'):
+                return cls._linux_get()
+            elif sys.platform.startswith('darwin'):
+                return cls._osx_get()
+
+        @classmethod
+        def get_modes(cls):
+            if sys.platform == 'win32':
+                return cls._win32_get_modes()
+            elif sys.platform.startswith('linux'):
+                return cls._linux_get_modes()
+            elif sys.platform.startswith('darwin'):
+                return cls._osx_get_modes()
+
+        @staticmethod
+        def _win32_get_modes():
+            '''
+            Get the primary windows display width and height
+            '''
+            import win32api
+            from pywintypes import DEVMODEType, error
+            modes = []
+            i = 0
+            try:
+                while True:
+                    mode = win32api.EnumDisplaySettings(None, i)
+                    modes.append((
+                        int(mode.PelsWidth),
+                        int(mode.PelsHeight),
+                        int(mode.BitsPerPel),
+                        ))
+                    i += 1
+            except error:
+                pass
+
+            return modes
+
+        @staticmethod
+        def _win32_get():
+            '''
+            Get the primary windows display width and height
+            '''
+            import ctypes
+            user32 = ctypes.windll.user32
+            screensize = (
+                user32.GetSystemMetrics(0),
+                user32.GetSystemMetrics(1),
+                )
+            return screensize
+
+        @staticmethod
+        def _win32_set(width=None, height=None, depth=32):
+            '''
+            Set the primary windows display to the specified mode
+            '''
+            # Gave up on ctypes, the struct is really complicated
+            #user32.ChangeDisplaySettingsW(None, 0)
+            import win32api
+            from pywintypes import DEVMODEType
+            if width and height:
+
+                if not depth:
+                    depth = 32
+
+                mode = win32api.EnumDisplaySettings()
+                mode.PelsWidth = width
+                mode.PelsHeight = height
+                mode.BitsPerPel = depth
+
+                win32api.ChangeDisplaySettings(mode, 0)
+            else:
+                win32api.ChangeDisplaySettings(None, 0)
+
+
+        @staticmethod
+        def _win32_set_default():
+            '''
+            Reset the primary windows display to the default mode
+            '''
+            # Interesting since it doesn't depend on pywin32
+            import ctypes
+            user32 = ctypes.windll.user32
+            # set screen size
+            user32.ChangeDisplaySettingsW(None, 0)
+
+        @staticmethod
+        def _linux_set(width=None, height=None, depth=32):
+            raise NotImplementedError()
+
+        @staticmethod
+        def _linux_get():
+            raise NotImplementedError()
+
+        @staticmethod
+        def _linux_get_modes():
+            raise NotImplementedError()
+
+        @staticmethod
+        def _osx_set(width=None, height=None, depth=32):
+            raise NotImplementedError()
+
+        @staticmethod
+        def _osx_get():
+            raise NotImplementedError()
+
+        @staticmethod
+        def _osx_get_modes():
+            raise NotImplementedError()
+
+
+    if __name__ == '__main__':
+        print('Primary screen resolution: {}x{}'.format(
+            *ScreenRes.get()
+            ))
+        print(ScreenRes.get_modes())
+        ScreenRes.set(1280, 720)
+        # ScreenRes.set(1920, 1080)
+        # ScreenRes.set() # Set defaults
+
 
 print "Welcome To Convergence Jukebox"
 print "Your Jukebox Is Being Configured"
@@ -44,10 +346,17 @@ print "PyRSS2Gen is copyright (c) by Andrew Dalke Scientific, AB (previously"
 print "Dalke Scientific Software, LLC) and is released under the BSD license."
 print "Info on PyRSS2Gen at http://www.dalkescientific.com/Python/PyRSS2Gen.html"
 
-time.sleep(10)
+time.sleep(15)
 
 full_path = os.path.realpath('__file__')  # http://bit.ly/1RQBZYF
 artist_list = []
+
+user32 = ctypes.windll.user32  # Measure screen resolution. http://bit.ly/1JPUtkd
+screen_size = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
+# print(ScreenRes.get_modes())
+get_available_resolutions()
+if str(screen_size) != "(1280, 720)":
+    set_720_resolution()
 
 if os.path.exists(str(os.path.dirname(full_path)) + "\music"):
     print "music directory exists at " + str(os.path.dirname(full_path)) + "\music. Nothing to do here."
@@ -77,7 +386,6 @@ if int(mp3_counter) < 50:
     sys.exit()
 else:
     print str(os.path.dirname(full_path)) + "\convergenceplayer.py"
-    # sys.exit()
     if os.path.exists(str(os.path.dirname(full_path)) + "\convergenceplayer.py"):
         print ".py directory exists at " + str(os.path.dirname(full_path)) + "\convergenceplayer.py"
         os.system("player_launch_py.exe")  # Launches Convergence Jukebox Player
