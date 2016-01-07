@@ -18,6 +18,10 @@
 # Dalke Scientific Software, LLC) and is released under the BSD license.
 # Info on PyRSS2Gen at http://www.dalkescientific.com/Python/PyRSS2Gen.html
 
+# <div>Icons made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="http://www.flaticon.com" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0">CC BY 3.0</a></div>
+
+# This Python script has been tested and compiles into a windows.exe using Pyinstaller.
+
 import os
 from Tkinter import *
 import glob
@@ -25,7 +29,7 @@ import sys
 import time
 import ctypes
 
-def get_available_resolutions():
+def get_available_resolutions():  # Checks to see if device is 720p compatable for default display.
 
     class ScreenRes(object):  # http://bit.ly/1R6CXjF
         @classmethod
@@ -320,12 +324,12 @@ def set_720_resolution():
         print('Primary screen resolution: {}x{}'.format(
             *ScreenRes.get()
             ))
-        print(ScreenRes.get_modes())
+        # print(ScreenRes.get_modes())
         ScreenRes.set(1280, 720)
         # ScreenRes.set(1920, 1080)
         # ScreenRes.set() # Set defaults
 
-
+# Below is the display mandated by the various software licences used in Convergence Jukebox.
 print "Welcome To Convergence Jukebox"
 print "Your Jukebox Is Being Configured"
 print "This Could Take A Few Minutes"
@@ -357,6 +361,7 @@ screen_size = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
 get_available_resolutions()
 if str(screen_size) != "(1280, 720)":
     set_720_resolution()
+
 
 if os.path.exists(str(os.path.dirname(full_path)) + "\music"):
     print "music directory exists at " + str(os.path.dirname(full_path)) + "\music. Nothing to do here."
