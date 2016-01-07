@@ -18,6 +18,8 @@
 # Dalke Scientific Software, LLC) and is released under the BSD license.
 # Info on PyRSS2Gen at http://www.dalkescientific.com/Python/PyRSS2Gen.html
 
+# This Python script has been tested and compiles into a windows.exe using Pyinstaller.
+
 import os
 import glob
 import datetime  # Used to convert song duration in seconds to minutes/seconds.
