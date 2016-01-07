@@ -18,6 +18,8 @@
 # Dalke Scientific Software, LLC) and is released under the BSD license.
 # Info on PyRSS2Gen at http://www.dalkescientific.com/Python/PyRSS2Gen.html
 
+# This Python script has been tested and compiles into a windows.exe using py2exe.
+
 import pickle  # Used to save and reload python lists.
 import tkFont
 import Tkinter as tk
