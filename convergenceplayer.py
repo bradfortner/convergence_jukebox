@@ -32,6 +32,7 @@ from ctypes import *  # Used by playmp3.py windows based mp3 player http://bit.l
 import getpass  # Used to get user name http://stackoverflow.com/questions/4325416/how-do-i-get-the-username-in-python
 import re  # Used in searching Genre substrings. Specifically word-boundaries of regular expressions.
 from Tkinter import *  # Used as message to alert users to place MP3's in music folder
+from subprocess import Popen, PIPE #requred for mpg321 mp3 player for Rasberry Pi version
 
 print "Welcome To Convergence Jukebox"
 print "Your Jukebox Is Being Configured"
@@ -45,7 +46,8 @@ artistSelectRoutine = 0  # Used to break Artist
 artistSortRequired = "No"
 genreYearSort = "No"
 artistSortRequiredByYear = "No"
-winmm = windll.winmm  # required by playMP3
+if sys.platform == 'win32':
+    winmm = windll.winmm  # required by playMP3
 play_list = []  # Holds song numbers for paid selections.
 build_list = []  # List temporarily holds ID3 data during song processing. Data later written to song_list then cleared.
 remove_list = []  # Python List used to remove songs from random_list
@@ -311,17 +313,34 @@ def count_number_mp3_songs():
     mp3_counter = 0
     full_path = os.path.realpath('__file__')
 
-    mp3_counter = len(glob.glob1(str(os.path.dirname(full_path)) + "\music", "*.mp3"))  # Number of MP3 files in library
-    current_file_count = int(mp3_counter)  # provides int output for later comparison
-    if int(mp3_counter) == 0:
-        master = Tk()
-        screen_message = "Program Stopped. Please place fifty mp3's in the Convergence Jukebox music directory at " \
-                     + str(os.path.dirname(full_path)) + "\music and then re-run the Convergence Jukebox software"
-        msg = Message(master, text=screen_message)
-        msg.config(bg='white', font=('times', 24, 'italic'))
-        msg.pack()
-        mainloop()
-        sys.exit()
+    if sys.platform == 'win32':
+        mp3_counter = len(glob.glob1(str(os.path.dirname(full_path)) + "\music", "*.mp3"))  # Number of MP3 files in library
+        current_file_count = int(mp3_counter)  # provides int output for later comparison
+        if int(mp3_counter) == 0:
+            master = Tk()
+            screen_message = "Program Stopped. Please place fifty mp3's in the Convergence Jukebox music directory at " \
+                         + str(os.path.dirname(full_path)) + "\music and then re-run the Convergence Jukebox software"
+            msg = Message(master, text=screen_message)
+            msg.config(bg='white', font=('times', 24, 'italic'))
+            msg.pack()
+            mainloop()
+            sys.exit()
+
+
+
+    if sys.platform.startswith('linux'):
+        mp3_counter = len(glob.glob1(str(os.path.dirname(full_path)) + "/music", "*.mp3"))  # Number of MP3 files in library
+        current_file_count = int(mp3_counter)  # provides int output for later comparison
+        print "Current Linux MP3 Count: " + str(current_file_count)
+        if int(mp3_counter) == 0:
+            master = Tk()
+            screen_message = "Program Stopped. Please place fifty mp3's in the Convergence Jukebox music directory at " \
+                         + str(os.path.dirname(full_path)) + "/music and then re-run the Convergence Jukebox software"
+            msg = Message(master, text=screen_message)
+            msg.config(bg='white', font=('times', 24, 'italic'))
+            msg.pack()
+            mainloop()
+            sys.exit()
 
     past_mp3_file_count = open("file_count.txt", "r")  # Compares mp3 files from last run and looks for a difference
     for last_file_count_a in past_mp3_file_count:
@@ -361,13 +380,22 @@ def song_list_generator():
         location_list = []  # Creates temporary location_list used for initial song file names for mp3 player.
         # File names later inserted in song_list to be used to play mp3's
         full_path = os.path.realpath('__file__')
-        for name in os.listdir(str(os.path.dirname(full_path)) + "\music" + "\\"):  # Reads files in the music dir.
-            if name.endswith(".mp3"):  # If statement searching for files with mp3 designation
-                title = name  # Name of mp3 transferred to title variable
-                location_list.append(title)  # Name of song appended to location_list
+        if sys.platform == 'win32':
+            for name in os.listdir(str(os.path.dirname(full_path)) + "\music" + "\\"):  # Reads files in the music dir.
+                if name.endswith(".mp3"):  # If statement searching for files with mp3 designation
+                    title = name  # Name of mp3 transferred to title variable
+                    location_list.append(title)  # Name of song appended to location_list
+        if sys.platform.startswith('linux'):
+            for name in os.listdir(str(os.path.dirname(full_path)) + "/music"):  # Reads files in the music dir.
+                if name.endswith(".mp3"):  # If statement searching for files with mp3 designation
+                    title = name  # Name of mp3 transferred to title variable
+                    location_list.append(title)  # Name of song appended to location_list
         x = 0  # hsaudiotag 1.1.1 code begins here to pull out ID3 information
         while x < len(location_list):  # Python List len function http://docs.python.org/2/library/functions.html#len
-            myfile = auto.File(str(os.path.dirname(full_path)) + "\music" + "\\" + location_list[x] + "")
+            if sys.platform == 'win32':
+                myfile = auto.File(str(os.path.dirname(full_path)) + "\music" + "\\" + location_list[x] + "")
+            if sys.platform.startswith('linux'):
+                myfile = auto.File(str(os.path.dirname(full_path)) + "/music" + "/" + location_list[x] + "")
             # Note "" Quotes Required in above string.
             # hsaudiotag function that assigns mp3 song to myfile object
             titleorg = myfile.title  # Assigns above mp3 ID3 Title to titleorg variable
@@ -436,8 +464,26 @@ def play_random_song():
         log_file_update.close()
     full_path = os.path.realpath('__file__')
     print "Now playing: " + str(x)
-    playMP3(str(os.path.dirname(full_path)) + '\music' + '\\\\' + song_list[x][8])  # Plays song using mp3Play.
-    # info on mp3Play at http://www.mailsend-online.com/blog/play-mp3-files-with-python-on-windows.html
+    if sys.platform == 'win32':
+        playMP3(str(os.path.dirname(full_path)) + '\music' + '\\\\' + song_list[x][8])  # Plays song using mp3Play.
+        # info on mp3Play at http://www.mailsend-online.com/blog/play-mp3-files-with-python-on-windows.html
+    if sys.platform.startswith('linux'):
+        current_path = os.getcwd()
+        print current_path
+        path = str(current_path) + "/music"
+        os.chdir( path )# sets path for mpg321
+        print song_list[x][8]
+        print "line 480"
+        title_with_whitespace = str(song_list[x][8])
+        print title_with_whitespace
+        title_without_whitespace = title_with_whitespace.replace (" ", "_")
+        print title_without_whitespace
+        os.rename(str(title_with_whitespace), str(title_without_whitespace))
+        music = os.popen('mpg321 '+ song_list[x][8], 'w')
+        music.close()
+        os.rename(str(title_without_whitespace), str(title_with_whitespace))
+        path = current_path
+        os.chdir( path )# resets path
 
 
 def random_delete_song():
@@ -519,8 +565,25 @@ def play_list_player():
         if song_number == delete_song_index:  # Checks if song to be deleted is still in random_list
             del random_list[song_index]  # Deletes song number from random list if found. http://bit.ly/1MRbT6I
     full_path = os.path.realpath('__file__')
-    playMP3(str(os.path.dirname(full_path)) + '\music' + '\\\\' + song_list[x][8])  # Plays song using mp3Play.
-    #  Info on mp3Play at http://bit.ly/1MgaGCh
+    if os.path.exists(str(os.path.dirname("c:\\users\\" + computer_account_user_name + "\\Dropbox\\public\\"))):
+        log_file_update = open("c:\\users\\" + computer_account_user_name + "\\Dropbox\\public\\"
+                              + computer_account_user_name.lower() + "log.txt", "a+")
+        log_file_update.write(str(time_date_stamp + ',' + str(song_list[x][8]) + ',' + str(mode) + ',' + '0' + '\n'))
+        log_file_update.close()
+    full_path = os.path.realpath('__file__')
+    print "Now playing: " + str(x)
+    if sys.platform == 'win32':
+        playMP3(str(os.path.dirname(full_path)) + '\music' + '\\\\' + song_list[x][8])  # Plays song using mp3Play.
+        # info on mp3Play at http://www.mailsend-online.com/blog/play-mp3-files-with-python-on-windows.html
+    if sys.platform.startswith('linux'):
+        current_path = os.getcwd()
+        print current_path
+        path = str(current_path) + "/music"
+        os.chdir( path )# sets path for mpg321
+        music = os.popen('mpg321 '+ song_list[x][8], 'w')
+        music.close()
+        path = current_path
+        os.chdir( path )# resets path
     play_list_recover = open('play_list.pkl', 'rb')
     play_list = pickle.load(play_list_recover)
     play_list_recover.close()
@@ -576,9 +639,10 @@ def genre_file_change_detector():
 
 
 def mciSend(s):
-    i = winmm.mciSendStringA(s, 0, 0, 0)
-    if i != 0:
-        print "Error %d in mciSendString %s" % (i, s)
+    if sys.platform == 'win32':
+        i = winmm.mciSendStringA(s, 0, 0, 0)
+        if i != 0:
+            print "Error %d in mciSendString %s" % (i, s)
 
 
 def playMP3(mp3Name):
