@@ -35,13 +35,16 @@ from ctypes import *  # Used by playmp3.py windows based mp3 player.
 # http://www.mailsend-online.com/blog/play-mp3-files-with-python-on-windows.html
 
 computer_account_user_name = getpass.getuser()  # Used to write various log and RSS files to local directories.
-winmm = windll.winmm  # Variable used in playmp3.py.
+if sys.platform == 'win32':
+    winmm = windll.winmm  # Variable used in playmp3.py.
 full_path = os.path.realpath('__file__')  # http://bit.ly/1RQBZYF
 
 def mciSend(s):  # Function of playmp3.py
-    i = winmm.mciSendStringA(s, 0, 0, 0)
-    if i != 0:
-        print "Error %d in mciSendString %s" % (i, s)
+    if sys.platform == 'win32':
+        winmm = windll.winmm  # Variable used in playmp3.py.
+        i = winmm.mciSendStringA(s, 0, 0, 0)
+        if i != 0:
+            print "Error %d in mciSendString %s" % (i, s)
 
 
 def playMP3(mp3Name):  # Function of playmp3.py
@@ -295,9 +298,9 @@ def screen_display(event=None):  # Function assigns songs and places the 16 butt
 
     sn0 = song_list[song_artist_label][9]
     font_size()
-    song0 = tk.Button(panel1, highlightcolor="Red", highlightthickness=20, font=str(font_type),
-                      command=lambda: song_entry(sn0), background="black", foreground="white",
-                      text=song_list[song_artist_label][0] + "\n" + song_list[song_artist_label][1])
+
+    song0 = tk.Button(panel1, font=str(font_type), command=lambda: song_entry(sn0), background="black",
+                      foreground="white", text=song_list[song_artist_label][0] + "\n" + song_list[song_artist_label][1])
     song0.pack()
     song0.place(x=491, y=227, width=335, height=50)  # Place attribute positions button using x,y variables.
 
@@ -2172,6 +2175,13 @@ def set_default_screen_resolution():
         print(ScreenRes.get_modes())
         # ScreenRes.set(1280, 720)
         # ScreenRes.set(1920, 1080)
+        if sys.platform.startswith('linux'):
+            print "music directory exists at " + str(os.path.dirname(full_path)) + "Removing underscores to MP3 Files."
+            current_path = os.getcwd()
+            print current_path
+            path = str(current_path) + "/music"
+            os.chdir( path )# sets path for mpg321
+            [os.rename(f, f.replace('_', ' ')) for f in os.listdir('.') if not f.startswith('.')]
         ScreenRes.set() # Set defaults
 
 
@@ -2205,7 +2215,8 @@ upcoming_listSave = open('upcoming_list.pkl', 'wb')
 pickle.dump(upcoming_list, upcoming_listSave)
 upcoming_listSave.close()
 jukebox_display = tk.Tk()  # Creates a frame whose parent is tk.Tk (that is, root), gives it the name "jukebox_display".
-jukebox_display.overrideredirect(1)  # Makes application borderless.
+if sys.platform == 'win32':
+    jukebox_display.overrideredirect(1)  # Makes application borderless.
 # http://stackoverflow.com/questions/9371663/how-can-i-create-a-borderless-application-in-python-windows
 image_file = "jukebox.png"  # this code picks an image file. It can be .bmp, .jpg, .gif. or .png.
 image1 = ImageTk.PhotoImage(Image.open(image_file))  # Loads the file and covert it to a Tkinter image object (image1).
@@ -2217,7 +2228,14 @@ x = 0
 y = 0
 jukebox_display.geometry("%dx%d+%d+%d" % (w, h, x, y))  # Code makes the jukebox_display window the size of the image
 # by using the variables generated
-jukebox_display.state('zoomed')  # Code maximizes the window.
+if sys.platform == 'win32':
+    jukebox_display.state('zoomed')  # Code maximizes the window.
+'''if sys.platform.startswith('linux'):
+    jukebox_display.state('normal')  # Code maximizes the window.'''
+
+if sys.platform.startswith('linux'):
+    jukebox_display.state('normal')  # Code maximizes the window.
+
 # Next two lines are required because jukebox_display has no image argument. So a label is used as a panel.
 panel1 = tk.Label(jukebox_display, image=image1)
 panel1.pack(side='top', fill='both', expand='no')
