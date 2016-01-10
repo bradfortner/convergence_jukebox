@@ -330,7 +330,14 @@ def set_720_resolution():
         # ScreenRes.set() # Set defaults
 
 # Below is the display mandated by the various software licences used in Convergence Jukebox.
-print "Welcome To Convergence Jukebox"
+if sys.platform.startswith('linux'):
+    print "Welcome to the Linux version of Convergence Jukebox"
+
+if sys.platform == 'win32':
+    print "Welcome to the Windows version of Convergence Jukebox"
+
+
+# print "Welcome To Convergence Jukebox"
 print "Your Jukebox Is Being Configured"
 print "This Could Take A Few Minutes"
 print
@@ -350,34 +357,62 @@ print "PyRSS2Gen is copyright (c) by Andrew Dalke Scientific, AB (previously"
 print "Dalke Scientific Software, LLC) and is released under the BSD license."
 print "Info on PyRSS2Gen at http://www.dalkescientific.com/Python/PyRSS2Gen.html"
 
-time.sleep(15)
+
+time.sleep(1)
 
 full_path = os.path.realpath('__file__')  # http://bit.ly/1RQBZYF
 artist_list = []
 
-user32 = ctypes.windll.user32  # Measure screen resolution. http://bit.ly/1JPUtkd
-screen_size = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
-# print(ScreenRes.get_modes())
-get_available_resolutions()
-if str(screen_size) != "(1280, 720)":
-    set_720_resolution()
+if sys.platform == 'win32':
+    print "Welcome to the Windows version of Convergence Jukebox"
+    user32 = ctypes.windll.user32  # Measure screen resolution. http://bit.ly/1JPUtkd
+    screen_size = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
+    # print(ScreenRes.get_modes())
+    get_available_resolutions()
+    if str(screen_size) != "(1280, 720)":
+        set_720_resolution()
 
+if sys.platform == 'win32':
+    if os.path.exists(str(os.path.dirname(full_path)) + "\music"):
+        print "music directory exists at " + str(os.path.dirname(full_path)) + "\music. Nothing to do here."
+    else:
+        print "music directory does not exist."
+        os.makedirs(str(os.path.dirname(full_path)) + "\music")
+        master = Tk()
+        screen_message = "Program Stopped. Please place fifty mp3's in the Convergence Jukebox music directory at " \
+                         + str(os.path.dirname(full_path)) + "\music and then re-run the Convergence Jukebox software"
+        msg = Message(master, text=screen_message)
+        msg.config(bg='white', font=('times', 24, 'italic'), justify='center')
+        msg.pack()
+        mainloop()
+        sys.exit()
 
-if os.path.exists(str(os.path.dirname(full_path)) + "\music"):
-    print "music directory exists at " + str(os.path.dirname(full_path)) + "\music. Nothing to do here."
-else:
-    print "music directory does not exist."
-    os.makedirs(str(os.path.dirname(full_path)) + "\music")
-    master = Tk()
-    screen_message = "Program Stopped. Please place fifty mp3's in the Convergence Jukebox music directory at " \
-                     + str(os.path.dirname(full_path)) + "\music and then re-run the Convergence Jukebox software"
-    msg = Message(master, text=screen_message)
-    msg.config(bg='white', font=('times', 24, 'italic'), justify='center')
-    msg.pack()
-    mainloop()
+    mp3_counter = len(glob.glob1(str(os.path.dirname(full_path)) + "\music", "*.mp3"))  # Counts number of MP3 files
+
+if sys.platform.startswith('linux'):
+    if os.path.exists(str(os.path.dirname(full_path)) + "/music"):
+        print "music directory exists at " + str(os.path.dirname(full_path)) + "Adding underscores to MP3 Files."
+        current_path = os.getcwd()
+        print current_path
+        path = str(current_path) + "/music"
+        os.chdir( path )# sets path for mpg321
+        [os.rename(f, f.replace(' ', '_')) for f in os.listdir('.') if not f.startswith('.')]
+    else:
+        print "music directory does not exist."
+        os.makedirs(str(os.path.dirname(full_path)) + "/music")
+        sys.exit()
+        master = Tk()
+        screen_message = "Program Stopped. Please place fifty mp3's in the Convergence Jukebox music directory at " \
+                         + str(os.path.dirname(full_path)) + "\music and then re-run the Convergence Jukebox software"
+        msg = Message(master, text=screen_message)
+        msg.config(bg='white', font=('times', 24, 'italic'), justify='center')
+        msg.pack()
+        mainloop()
+        sys.exit()
+
+    mp3_counter = len(glob.glob1(str(os.path.dirname(full_path)) + "/music", "*.mp3"))  # Counts number of MP3 files
     sys.exit()
 
-mp3_counter = len(glob.glob1(str(os.path.dirname(full_path)) + "\music", "*.mp3"))  # Counts number of MP3 files
 current_file_count = int(mp3_counter)  # provides int output for later comparison
 
 if int(mp3_counter) < 50:
@@ -391,10 +426,20 @@ if int(mp3_counter) < 50:
     sys.exit()
 else:
     print str(os.path.dirname(full_path)) + "\convergenceplayer.py"
-    if os.path.exists(str(os.path.dirname(full_path)) + "\convergenceplayer.py"):
-        print ".py directory exists at " + str(os.path.dirname(full_path)) + "\convergenceplayer.py"
-        os.system("player_launch_py.exe")  # Launches Convergence Jukebox Player
-        sys.exit()
-    else:
-        os.system("player_launch.exe")  # Launches Convergence Jukebox Player
-        sys.exit()
+    if sys.platform == 'win32':
+        if os.path.exists(str(os.path.dirname(full_path)) + "\convergenceplayer.py"):
+            print ".py directory exists at " + str(os.path.dirname(full_path)) + "\convergenceplayer.py"
+            os.system("player_launch_py.exe")  # Launches Convergence Jukebox Player
+            sys.exit()
+        else:
+            os.system("player_launch.exe")  # Launches Convergence Jukebox Player
+            sys.exit()
+
+    if sys.platform.startswith('linux'):
+        print "Linux version of Convergence Jukebox. something needs to happen here."
+        print str(os.path.dirname(full_path))
+        path_string = str(os.path.dirname(full_path))
+        #sys.exit()
+        # os.system(path_string + "/convergenceplayer.py")  # Launches Convergence Jukebox Player
+        os.system("/home/pi/python/jukebox/convergenceplayer.py")  # Launches Convergence Jukebox Player
+        #sys.exit()
