@@ -28,8 +28,9 @@ import glob
 import sys
 import time
 import ctypes
+import Tkinter as tk
 
-def get_available_resolutions():  # Checks to see if device is 720p compatable for default display.
+def get_available_resolutions_win():  # Checks to see if device is 720p compatable for default display.
 
     class ScreenRes(object):  # http://bit.ly/1R6CXjF
         @classmethod
@@ -357,7 +358,6 @@ print "PyRSS2Gen is copyright (c) by Andrew Dalke Scientific, AB (previously"
 print "Dalke Scientific Software, LLC) and is released under the BSD license."
 print "Info on PyRSS2Gen at http://www.dalkescientific.com/Python/PyRSS2Gen.html"
 
-
 time.sleep(1)
 
 full_path = os.path.realpath('__file__')  # http://bit.ly/1RQBZYF
@@ -371,6 +371,31 @@ if sys.platform == 'win32':
     get_available_resolutions()
     if str(screen_size) != "(1280, 720)":
         set_720_resolution()
+
+if sys.platform.startswith('linux'):
+    root = tk.Tk()
+    root.geometry("128000000x72000000")
+    tk.Label(text="Checking Your Screen Resolution Maimum Size").pack()
+    screen_width = root.winfo_screenwidth()
+    screen_height = root.winfo_screenheight()
+    print screen_width
+    print screen_height
+    root.destroy()
+    root.mainloop()
+    if screen_width >=1280 and screen_height >= 720:
+        print "This Screen Is 720P compatable"
+    else:
+        print "I'm not 720p compatable"
+        master = Tk()
+        screen_message = "Program Stopped. This computer is not 1280 by 720 (720p) compatable." \
+                         " 720p is the default resolution for Convergence Jukebox. This means Convergence Jukebox" \
+                         " will not run on this computer. Consult www.convergencejukebox.com if you want more" \
+                         " details and a potential fix to the problem."
+        msg = Message(master, text=screen_message)
+        msg.config(bg='white', font=('times', 24, 'italic'), justify='center')
+        msg.pack()
+        mainloop()
+        sys.exit()
 
 if sys.platform == 'win32':
     if os.path.exists(str(os.path.dirname(full_path)) + "\music"):
@@ -410,9 +435,7 @@ if sys.platform.startswith('linux'):
         mainloop()
         sys.exit()
 
-    mp3_counter = len(glob.glob1(str(os.path.dirname(full_path)) + "/music", "*.mp3"))  # Counts number of MP3 files
-    sys.exit()
-
+mp3_counter = len(glob.glob1(str(os.path.dirname(full_path)) + "/music", "*.mp3"))  # Counts number of MP3 files
 current_file_count = int(mp3_counter)  # provides int output for later comparison
 
 if int(mp3_counter) < 50:
@@ -435,11 +458,12 @@ else:
             os.system("player_launch.exe")  # Launches Convergence Jukebox Player
             sys.exit()
 
-    if sys.platform.startswith('linux'):
-        print "Linux version of Convergence Jukebox. something needs to happen here."
-        print str(os.path.dirname(full_path))
-        path_string = str(os.path.dirname(full_path))
-        #sys.exit()
-        # os.system(path_string + "/convergenceplayer.py")  # Launches Convergence Jukebox Player
-        os.system("/home/pi/python/jukebox/convergenceplayer.py")  # Launches Convergence Jukebox Player
-        #sys.exit()
+if sys.platform.startswith('linux'):
+    print "Linux version of Convergence Jukebox. something needs to happen here."
+    print str(os.path.dirname(full_path))
+    path_string = str(os.path.dirname(full_path))
+    #sys.exit()
+    # os.system(path_string + "/convergenceplayer.py")  # Launches Convergence Jukebox Player
+    os.system("/home/pi/python/jukebox/convergenceplayer.py")  # Launches Convergence Jukebox Player
+    #sys.exit()
+
