@@ -20,6 +20,8 @@
 
 # This Python script has been tested and compiles into a windows.exe using Pyinstaller.
 
+
+
 import os
 import glob
 import datetime  # Used to convert song duration in seconds to minutes/seconds.
@@ -33,6 +35,9 @@ import getpass  # Used to get user name http://stackoverflow.com/questions/43254
 import re  # Used in searching Genre substrings. Specifically word-boundaries of regular expressions.
 from Tkinter import *  # Used as message to alert users to place MP3's in music folder
 from subprocess import Popen, PIPE #requred for mpg321 mp3 player for Rasberry Pi version
+import subprocess
+from subprocess import call
+
 
 print "Welcome To Convergence Jukebox"
 print "Your Jukebox Is Being Configured"
@@ -1065,7 +1070,11 @@ count_number_mp3_songs()  # Counts number of .mp3 files in /music.
 if not song_list:
     song_list_generator()
 artist_list_generator()
-gui_launch()
+if sys.platform == 'win32':
+    gui_launch()
+if sys.platform.startswith('linux'):  # http://stackoverflow.com/questions/2954516/run-python-in-a-separate-process
+    subprocess.call(['./run_gui_py'])
+
 
 infinite_loop = 1  # Jukebox infinite loop.
 while infinite_loop == 1:  # This infinite loop is the mp3 playback engine for the Jukebox. http://bit.ly/1vHqVkJ
