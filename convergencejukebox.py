@@ -29,6 +29,7 @@ import sys
 import time
 import ctypes
 import Tkinter as tk
+import convergenceplayer
 
 def get_available_resolutions_win():  # Checks to see if device is 720p compatable for default display.
 
@@ -358,7 +359,7 @@ print "PyRSS2Gen is copyright (c) by Andrew Dalke Scientific, AB (previously"
 print "Dalke Scientific Software, LLC) and is released under the BSD license."
 print "Info on PyRSS2Gen at http://www.dalkescientific.com/Python/PyRSS2Gen.html"
 
-time.sleep(1)
+time.sleep(15)
 
 full_path = os.path.realpath('__file__')  # http://bit.ly/1RQBZYF
 artist_list = []
@@ -447,23 +448,4 @@ if int(mp3_counter) < 50:
     msg.pack()
     mainloop()
     sys.exit()
-else:
-    print str(os.path.dirname(full_path)) + "\convergenceplayer.py"
-    if sys.platform == 'win32':
-        if os.path.exists(str(os.path.dirname(full_path)) + "\convergenceplayer.py"):
-            print ".py directory exists at " + str(os.path.dirname(full_path)) + "\convergenceplayer.py"
-            os.system("player_launch_py.exe")  # Launches Convergence Jukebox Player
-            sys.exit()
-        else:
-            os.system("player_launch.exe")  # Launches Convergence Jukebox Player
-            sys.exit()
-
-if sys.platform.startswith('linux'):
-    print "Linux version of Convergence Jukebox. something needs to happen here."
-    print str(os.path.dirname(full_path))
-    path_string = str(os.path.dirname(full_path))
-    #sys.exit()
-    # os.system(path_string + "/convergenceplayer.py")  # Launches Convergence Jukebox Player
-    os.system("/home/pi/python/jukebox/convergenceplayer.py")  # Launches Convergence Jukebox Player
-    #sys.exit()
-
+convergenceplayer()
