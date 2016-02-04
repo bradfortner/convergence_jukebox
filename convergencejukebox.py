@@ -18,7 +18,9 @@
 # Dalke Scientific Software, LLC) and is released under the BSD license.
 # Info on PyRSS2Gen at http://www.dalkescientific.com/Python/PyRSS2Gen.html
 
-# <div>Icons made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="http://www.flaticon.com" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0">CC BY 3.0</a></div>
+# <div>Icons made by <a href="http://www.freepik.com" title="Freepik">Freepik</a>
+# from <a href="http://www.flaticon.com" title="Flaticon">www.flaticon.com</a> is licensed by
+# <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0">CC BY 3.0</a></div>
 
 # This Python script has been tested and compiles into a windows.exe using Pyinstaller.
 
@@ -31,14 +33,12 @@ import ctypes
 import Tkinter as tk
 import convergenceplayer
 
+
 def get_available_resolutions_win():  # Checks to see if device is 720p compatable for default display.
 
     class ScreenRes(object):  # http://bit.ly/1R6CXjF
         @classmethod
-        def set(cls, width=None, height=None, depth=32):
-            '''
-            Set the primary display to the specified mode
-            '''
+        def set(cls, width=None, height=None, depth=32):#  Set the primary display to the specified mode
             if width and height:
                 print('Setting resolution to {}x{}'.format(width, height, depth))
             else:
@@ -111,7 +111,7 @@ def get_available_resolutions_win():  # Checks to see if device is 720p compatab
             Set the primary windows display to the specified mode
             '''
             # Gave up on ctypes, the struct is really complicated
-            #user32.ChangeDisplaySettingsW(None, 0)
+
             import win32api
             from pywintypes import DEVMODEType
             if width and height:
@@ -127,7 +127,6 @@ def get_available_resolutions_win():  # Checks to see if device is 720p compatab
                 win32api.ChangeDisplaySettings(mode, 0)
             else:
                 win32api.ChangeDisplaySettings(None, 0)
-
 
         @staticmethod
         def _win32_set_default():
@@ -164,14 +163,11 @@ def get_available_resolutions_win():  # Checks to see if device is 720p compatab
         def _osx_get_modes():
             raise NotImplementedError()
 
-
     if __name__ == '__main__':
         print('Primary screen resolution: {}x{}'.format(
             *ScreenRes.get()
             ))
-        # print(ScreenRes.get_modes())
-        available_resolutions = (ScreenRes.get_modes())
-        # print available_resolutions
+
         if (1280, 720, 32) in (ScreenRes.get_modes()):
             print "I'm 720p compatable continuing Convergence Jukebox"
         else:
@@ -227,10 +223,7 @@ def set_720_resolution():
                 return cls._osx_get_modes()
 
         @staticmethod
-        def _win32_get_modes():
-            '''
-            Get the primary windows display width and height
-            '''
+        def _win32_get_modes():#  Get the primary windows display width and height
             import win32api
             from pywintypes import DEVMODEType, error
             modes = []
@@ -250,10 +243,7 @@ def set_720_resolution():
             return modes
 
         @staticmethod
-        def _win32_get():
-            '''
-            Get the primary windows display width and height
-            '''
+        def _win32_get():#  Get the primary windows display width and height
             import ctypes
             user32 = ctypes.windll.user32
             screensize = (
@@ -263,12 +253,8 @@ def set_720_resolution():
             return screensize
 
         @staticmethod
-        def _win32_set(width=None, height=None, depth=32):
-            '''
-            Set the primary windows display to the specified mode
-            '''
+        def _win32_set(width=None, height=None, depth=32):# Set the primary windows display to the specified mode
             # Gave up on ctypes, the struct is really complicated
-            #user32.ChangeDisplaySettingsW(None, 0)
             import win32api
             from pywintypes import DEVMODEType
             if width and height:
@@ -285,12 +271,8 @@ def set_720_resolution():
             else:
                 win32api.ChangeDisplaySettings(None, 0)
 
-
         @staticmethod
-        def _win32_set_default():
-            '''
-            Reset the primary windows display to the default mode
-            '''
+        def _win32_set_default():#  Reset the primary windows display to the default mode
             # Interesting since it doesn't depend on pywin32
             import ctypes
             user32 = ctypes.windll.user32
@@ -321,7 +303,6 @@ def set_720_resolution():
         def _osx_get_modes():
             raise NotImplementedError()
 
-
     if __name__ == '__main__':
         print('Primary screen resolution: {}x{}'.format(
             *ScreenRes.get()
@@ -338,8 +319,6 @@ if sys.platform.startswith('linux'):
 if sys.platform == 'win32':
     print "Welcome to the Windows version of Convergence Jukebox"
 
-
-# print "Welcome To Convergence Jukebox"
 print "Your Jukebox Is Being Configured"
 print "This Could Take A Few Minutes"
 print
@@ -368,7 +347,6 @@ if sys.platform == 'win32':
     print "Welcome to the Windows version of Convergence Jukebox"
     user32 = ctypes.windll.user32  # Measure screen resolution. http://bit.ly/1JPUtkd
     screen_size = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
-    # print(ScreenRes.get_modes())
     get_available_resolutions()
     if str(screen_size) != "(1280, 720)":
         set_720_resolution()
@@ -379,11 +357,9 @@ if sys.platform.startswith('linux'):
     tk.Label(text="Checking Your Screen Resolution Maimum Size").pack()
     screen_width = root.winfo_screenwidth()
     screen_height = root.winfo_screenheight()
-    print screen_width
-    print screen_height
     root.destroy()
     root.mainloop()
-    if screen_width >=1280 and screen_height >= 720:
+    if screen_width >= 1280 and screen_height >= 720:
         print "This Screen Is 720P compatable"
     else:
         print "I'm not 720p compatable"
@@ -421,12 +397,11 @@ if sys.platform.startswith('linux'):
         current_path = os.getcwd()
         print current_path
         path = str(current_path) + "/music"
-        os.chdir( path )# sets path for mpg321
+        os.chdir(path)  # sets path for mpg321
         [os.rename(f, f.replace(' ', '_')) for f in os.listdir('.') if not f.startswith('.')]
     else:
         print "music directory does not exist."
         os.makedirs(str(os.path.dirname(full_path)) + "/music")
-        sys.exit()
         master = Tk()
         screen_message = "Program Stopped. Please place fifty mp3's in the Convergence Jukebox music directory at " \
                          + str(os.path.dirname(full_path)) + "\music and then re-run the Convergence Jukebox software"
@@ -447,5 +422,5 @@ if int(mp3_counter) < 50:
     msg.config(bg='white', font=('times', 24, 'italic'), justify='center')
     msg.pack()
     mainloop()
-    sys.exit()
+print"Leaving Jukebox"
 convergenceplayer()
