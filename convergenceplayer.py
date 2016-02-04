@@ -20,8 +20,6 @@
 
 # This Python script has been tested and compiles into a windows.exe using Pyinstaller.
 
-
-
 import os
 import glob
 import datetime  # Used to convert song duration in seconds to minutes/seconds.
@@ -34,14 +32,17 @@ from ctypes import *  # Used by playmp3.py windows based mp3 player http://bit.l
 import getpass  # Used to get user name http://stackoverflow.com/questions/4325416/how-do-i-get-the-username-in-python
 import re  # Used in searching Genre substrings. Specifically word-boundaries of regular expressions.
 from Tkinter import *  # Used as message to alert users to place MP3's in music folder
-from subprocess import Popen, PIPE #requred for mpg321 mp3 player for Rasberry Pi version
+from subprocess import Popen, PIPE #  requred for mpg321 mp3 player for Rasberry Pi version
 import subprocess
 from subprocess import call
+import tkMessageBox
+import Tkinter
 
 
 print "Welcome To Convergence Jukebox"
 print "Your Jukebox Is Being Configured"
 print "This Could Take A Few Minutes"
+
 
 computer_account_user_name = getpass.getuser()
 genre_file_changed = ""
@@ -61,30 +62,58 @@ flag_fourteen = ""
 flag_fourteen_change = ""
 output_list = []  # List is used to output information related to Jukebox functions. Contains information on songs
 song_list = []  # List is used to build final list of all songs including ID3 information and file location.
-
 # song_list info locations: songTitle = song_list[x][0], songArtist = song_list[x][1], songAlbum = song_list[x][2]
 # song_year = song_list[x][3], songDurationSeconds = song_list[x][4], songGenre = song_list[x][5],
 # songDurationTime = song_list[x][6], songComment = song_list[x][7]
 
+current_directory = os.getcwd()
+if current_directory == "/home/pi":
+    os.chdir("/home/pi/python/jukebox")
+    current_directory = os.getcwd()
+
 
 def set_up_user_files_first_time():
     global full_path
-    full_path = os.path.realpath('__file__')  # http://bit.ly/1RQBZYF
+    current_directory = os.getcwd()
+    if current_directory == "/home/pi":
+        os.chdir("/home/pi/python/jukebox")
+        #current_directory = os.getcwd()
+        full_path = os.getcwd()
+    else:
+        full_path = os.path.realpath('__file__')  # http://bit.ly/1RQBZYF
+
     artist_list = []
     upcoming_list = []
 
-    if os.path.exists(str(os.path.dirname(full_path)) + "\music"):
-        print "music directory exists. Nothing to do here."
-    else:
-        print "music directory does not exist."
-        os.makedirs(str(os.path.dirname(full_path)) + "\music")
-        master = Tk()
-        screen_message = "Program Stopped. Please place fifty mp3's in the Convergence Jukebox music directory at " \
-                     + str(os.path.dirname(full_path)) + "\music and then re-run the Convergence Jukebox software"
-        msg = Message(master, text=screen_message)
-        msg.config(bg='white', font=('times', 24, 'italic'), justify='center')
-        msg.pack()
-        mainloop()
+
+
+    if sys.platform == 'win32':
+        if os.path.exists(str(os.path.dirname(full_path)) + "\music"):
+            print "music directory exists. Nothing to do here."
+        else:
+            print "music directory does not exist."
+            os.makedirs(str(os.path.dirname(full_path)) + "\music")
+            master = Tk()
+            screen_message = "Program Stopped. Please place fifty mp3's in the Convergence Jukebox music directory at " \
+                         + str(os.path.dirname(full_path)) + "\music and then re-run the Convergence Jukebox software"
+            msg = Message(master, text=screen_message)
+            msg.config(bg='white', font=('times', 24, 'italic'), justify='center')
+            msg.pack()
+            mainloop()
+
+    if sys.platform.startswith('linux'):
+        if os.path.exists(str(os.path.dirname(full_path)) + "/music"):
+            print "music directory exists. Nothing to do here."
+        else:
+            print "music directory does not exist."
+            os.makedirs(str(os.path.dirname(full_path)) + "/music")
+            master = Tk()
+            screen_message = "Program Stopped. Please place fifty mp3's in the Convergence Jukebox music directory at " \
+                         + str(os.path.dirname(full_path)) + "/music and then re-run the Convergence Jukebox software"
+            msg = Message(master, text=screen_message)
+            msg.config(bg='white', font=('times', 24, 'italic'), justify='center')
+            msg.pack()
+            mainloop()
 
     if os.path.exists("log.txt"):
         print "log.txt exists. Nothing to do here."
@@ -316,7 +345,8 @@ def count_number_mp3_songs():
     global current_file_count
     global last_file_count
     mp3_counter = 0
-    full_path = os.path.realpath('__file__')
+    #full_path = os.path.realpath('__file__')
+    print full_path
 
     if sys.platform == 'win32':
         mp3_counter = len(glob.glob1(str(os.path.dirname(full_path)) + "\music", "*.mp3"))  # Number of MP3 files in library
@@ -331,10 +361,14 @@ def count_number_mp3_songs():
             mainloop()
             sys.exit()
 
-
-
     if sys.platform.startswith('linux'):
-        mp3_counter = len(glob.glob1(str(os.path.dirname(full_path)) + "/music", "*.mp3"))  # Number of MP3 files in library
+        #mp3_counter = len(glob.glob1(str(os.path.dirname(full_path)) + "/music", "*.mp3"))  # Number of MP3 files in library
+
+        print "Linux MP3 Counter"
+        if os.path.exists(str(os.path.dirname(full_path)) + "/music"):
+            mp3_counter = len(glob.glob1(str(os.path.dirname(full_path)) + "/music", "*.mp3"))  # Number of MP3 files in library
+        else:
+            mp3_counter = len(glob.glob1(str(os.path.dirname(full_path)) + "/python/jukebox/music", "*.mp3"))  # Number of MP3 files in library
         current_file_count = int(mp3_counter)  # provides int output for later comparison
         print "Current Linux MP3 Count: " + str(current_file_count)
         if int(mp3_counter) == 0:
@@ -428,6 +462,18 @@ def song_list_generator():
             comment = str(commentorg)  # Removes Unicode "u" from string I think. http://bit.ly/1Qph2mS
             build_list.append(comment)  # Comment in ID3 data appended to build_list
             full_file_name = str(location_list[x])
+            print full_file_name
+            if sys.platform.startswith('linux'):
+                title_with_whitespace = full_file_name
+                title_without_whitespace = title_with_whitespace.replace(" ", "_")
+                full_file_name = title_without_whitespace
+                current_path = os.getcwd()
+                temp_path = str(current_path)+'/music'
+
+                os.chdir(temp_path)  # resets path
+                os.rename(str(title_with_whitespace), str(title_without_whitespace))
+                os.chdir(current_path)# resets path
+
             build_list.append(full_file_name)
             song_list_generate.append(build_list)
             build_list.append(x)
@@ -436,7 +482,6 @@ def song_list_generator():
             print "www.convergencejukebox.com Building your database " + str(full_file_name) + ". " + str(y) + \
                   " files remaining to process."
             x += 1
-        print len(song_list_generate)
 
         song_list_save = open('song_list.pkl', 'wb')  # song_list saved as binary pickle file
         pickle.dump(song_list_generate, song_list_save)
@@ -474,21 +519,19 @@ def play_random_song():
         # info on mp3Play at http://www.mailsend-online.com/blog/play-mp3-files-with-python-on-windows.html
     if sys.platform.startswith('linux'):
         current_path = os.getcwd()
-        print current_path
+        reset_path = current_path
         path = str(current_path) + "/music"
+        print path
         os.chdir( path )# sets path for mpg321
+        current_path = os.getcwd()
+        print current_path
         print song_list[x][8]
-        print "line 480"
-        title_with_whitespace = str(song_list[x][8])
-        print title_with_whitespace
-        title_without_whitespace = title_with_whitespace.replace (" ", "_")
-        print title_without_whitespace
-        os.rename(str(title_with_whitespace), str(title_without_whitespace))
+        print song_list[x][8]
         music = os.popen('mpg321 '+ song_list[x][8], 'w')
         music.close()
-        os.rename(str(title_without_whitespace), str(title_with_whitespace))
-        path = current_path
+        path = reset_path
         os.chdir( path )# resets path
+        print path
 
 
 def random_delete_song():
