@@ -105,7 +105,3 @@ GNU V3 General Public License
    [Unclutter]: <http://sourceforge.net/projects/unclutter/>
    [format mp3's]: <https://docs.google.com/document/d/1wc3l6keReNS850kQRRfQwHofUCvj3HhDXVgUWesRLf0/pub>
    [FAQ]: <https://docs.google.com/document/d/1WTYAmVawP2s8ruYispc3wRWVOO9bEDNvA2KJomWFTuw/pub>
-
-
-
-[PyRSS2Gen]: <>
