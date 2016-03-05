@@ -37,6 +37,7 @@ import subprocess
 from subprocess import call
 import tkMessageBox
 import Tkinter
+import Tkinter as tk
 
 
 print "Welcome To Convergence Jukebox"
@@ -52,6 +53,7 @@ artistSelectRoutine = 0  # Used to break Artist
 artistSortRequired = "No"
 genreYearSort = "No"
 artistSortRequiredByYear = "No"
+counter = 0
 if sys.platform == 'win32':
     winmm = windll.winmm  # required by playMP3
 play_list = []  # Holds song numbers for paid selections.
@@ -399,6 +401,7 @@ def song_list_generator():
         song_list_recover.close()
         song_list = song_list_open
     else:  # New song_list, filecount and location_list generated and saved.
+        database_indicator()
         song_list_generate = []
         build_list = []
         time_date_stamp = datetime.datetime.now().strftime("%A. %d. %B %Y %I:%M%p")  # Timestamp generate bit.ly/1MKPl5x
@@ -415,7 +418,6 @@ def song_list_generator():
         s = str(current_file_count)
         file_count_update.write(s)
         file_count_update.close()
-
         location_list = []  # Creates temporary location_list used for initial song file names for mp3 player.
         # File names later inserted in song_list to be used to play mp3's
         full_path = os.path.realpath('__file__')
@@ -469,11 +471,9 @@ def song_list_generator():
                 full_file_name = title_without_whitespace
                 current_path = os.getcwd()
                 temp_path = str(current_path)+'/music'
-
                 os.chdir(temp_path)  # resets path
                 os.rename(str(title_with_whitespace), str(title_without_whitespace))
                 os.chdir(current_path)# resets path
-
             build_list.append(full_file_name)
             song_list_generate.append(build_list)
             build_list.append(x)
@@ -486,7 +486,6 @@ def song_list_generator():
         song_list_save = open('song_list.pkl', 'wb')  # song_list saved as binary pickle file
         pickle.dump(song_list_generate, song_list_save)
         song_list_save.close()
-
         song_list = song_list_generate
     print "Exiting song_list_generator()"
     return song_list
@@ -1106,6 +1105,28 @@ def gui_launch():
     else:
         os.system("gui_launch.exe")  # Launches Convergence Jukebox GUI
 
+
+def database_indicator():
+    def song_counter_label(label):
+
+        def count():
+            global counter
+            counter += 1
+            label.config(text="You've added new songs. Updating your song database. Please be patient.")
+            label.after(1, count)
+            if counter > 7:
+                song_counter.quit()
+
+        count()
+
+    song_counter = tk.Tk()
+    song_counter.title("Updating Song Database")
+    label = tk.Label(song_counter, fg="black", width=130, height=200, font = "Helvetica 16 bold italic")
+    label.pack()
+    song_counter_label(label)
+    song_counter.mainloop()
+    print "All Done"
+
 set_up_user_files_first_time()
 write_jukebox_startup_to_log()  # Writes Jukebox start time to log.
 genre_read_and_select_engine()  # Invokes and builds lists for random play genre selection process.
@@ -1113,6 +1134,7 @@ count_number_mp3_songs()  # Counts number of .mp3 files in /music.
 if not song_list:
     song_list_generator()
 artist_list_generator()
+#song_counter.destroy()
 if sys.platform == 'win32':
     gui_launch()
 if sys.platform.startswith('linux'):  # http://stackoverflow.com/questions/2954516/run-python-in-a-separate-process
