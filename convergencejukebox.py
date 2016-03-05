@@ -38,7 +38,7 @@ def get_available_resolutions_win():  # Checks to see if device is 720p compatab
 
     class ScreenRes(object):  # http://bit.ly/1R6CXjF
         @classmethod
-        def set(cls, width=None, height=None, depth=32):#  Set the primary display to the specified mode
+        def set(cls, width=None, height=None, depth=32):  #  Set the primary display to the specified mode
             if width and height:
                 print('Setting resolution to {}x{}'.format(width, height, depth))
             else:
@@ -71,9 +71,6 @@ def get_available_resolutions_win():  # Checks to see if device is 720p compatab
 
         @staticmethod
         def _win32_get_modes():
-            '''
-            Get the primary windows display width and height
-            '''
             import win32api
             from pywintypes import DEVMODEType, error
             modes = []
@@ -94,9 +91,6 @@ def get_available_resolutions_win():  # Checks to see if device is 720p compatab
 
         @staticmethod
         def _win32_get():
-            '''
-            Get the primary windows display width and height
-            '''
             import ctypes
             user32 = ctypes.windll.user32
             screensize = (
@@ -223,7 +217,7 @@ def set_720_resolution():
                 return cls._osx_get_modes()
 
         @staticmethod
-        def _win32_get_modes():#  Get the primary windows display width and height
+        def _win32_get_modes():  #  Get the primary windows display width and height
             import win32api
             from pywintypes import DEVMODEType, error
             modes = []
@@ -243,7 +237,7 @@ def set_720_resolution():
             return modes
 
         @staticmethod
-        def _win32_get():#  Get the primary windows display width and height
+        def _win32_get():  #  Get the primary windows display width and height
             import ctypes
             user32 = ctypes.windll.user32
             screensize = (
@@ -253,7 +247,7 @@ def set_720_resolution():
             return screensize
 
         @staticmethod
-        def _win32_set(width=None, height=None, depth=32):# Set the primary windows display to the specified mode
+        def _win32_set(width=None, height=None, depth=32):  # Set the primary windows display to the specified mode
             # Gave up on ctypes, the struct is really complicated
             import win32api
             from pywintypes import DEVMODEType
@@ -272,7 +266,7 @@ def set_720_resolution():
                 win32api.ChangeDisplaySettings(None, 0)
 
         @staticmethod
-        def _win32_set_default():#  Reset the primary windows display to the default mode
+        def _win32_set_default():  #  Reset the primary windows display to the default mode
             # Interesting since it doesn't depend on pywin32
             import ctypes
             user32 = ctypes.windll.user32
