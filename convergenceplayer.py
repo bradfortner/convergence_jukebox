@@ -1121,7 +1121,8 @@ def database_indicator():
 
     song_counter = tk.Tk()
     song_counter.title("Updating Song Database")
-    label = tk.Label(song_counter, fg="black", width=130, height=200, font = "Helvetica 16 bold italic")
+    #label = tk.Label(song_counter, fg="black", width=130, height=200, font = "Helvetica 16 bold italic")
+    label = tk.Label(song_counter, fg="black", width=130, height=200)
     label.pack()
     song_counter_label(label)
     song_counter.mainloop()
@@ -1134,7 +1135,6 @@ count_number_mp3_songs()  # Counts number of .mp3 files in /music.
 if not song_list:
     song_list_generator()
 artist_list_generator()
-#song_counter.destroy()
 if sys.platform == 'win32':
     gui_launch()
 if sys.platform.startswith('linux'):  # http://stackoverflow.com/questions/2954516/run-python-in-a-separate-process
