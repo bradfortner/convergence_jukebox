@@ -393,6 +393,9 @@ def count_number_mp3_songs():
 
 def song_list_generator():
     global song_list
+    global file_name_with_error
+    delete_indicator = ""
+    #bad_file_name = ""
     print "Entering song_list_generator()"
     if last_file_count == current_file_count:  # If matched the song_list is loaded from file
         print "Jukebox music files same as last startup. Using existing song database."  # Message to console.
@@ -401,9 +404,9 @@ def song_list_generator():
         song_list_recover.close()
         song_list = song_list_open
     else:  # New song_list, filecount and location_list generated and saved.
-        database_indicator()
         song_list_generate = []
         build_list = []
+        location_list = []
         time_date_stamp = datetime.datetime.now().strftime("%A. %d. %B %Y %I:%M%p")  # Timestamp generate bit.ly/1MKPl5x
         log_file_entry = open("log.txt", "a+")  # new song_list added to log file.
         log_file_entry.write(str(time_date_stamp + ',' + 'New song_list generated' + ',' + '\n'))
@@ -439,50 +442,144 @@ def song_list_generator():
                 myfile = auto.File(str(os.path.dirname(full_path)) + "/music" + "/" + location_list[x] + "")
             # Note "" Quotes Required in above string.
             # hsaudiotag function that assigns mp3 song to myfile object
-            titleorg = myfile.title  # Assigns above mp3 ID3 Title to titleorg variable
-            artistorg = myfile.artist  # Assigns above mp3 ID3 Artist to artistorg variable
+            print "Building Song Database. Stand By. This can take some time"
             albumorg = myfile.album  # Assigns above mp3 ID3 Album name to albumorg variable
             yearorg = myfile.year  # Assigns above mp3 ID3 Year info to yearorg variable
             durationorgseconds = myfile.duration  # Assigns mp3 Duration (in seconds) info to durationorgseconds var.
             genreorg = myfile.genre  # Assigns above mp3 Genre info to genreorg variable
             commentorg = myfile.comment  # Assigns above mp3 Comment info to commentorg variable
-            title = str(titleorg)  # Removes Unicode "u" from string I think. http://bit.ly/1Qph2mS
-            build_list.append(title)  # Title of song appended to build_list
-            artist = str(artistorg)  # Removes Unicode "u" from string I think. http://bit.ly/1Qph2mS
-            build_list.append(artist)  # Artist of song appended to build_list
-            album = str(albumorg)  # Removes Unicode "u" from string I think. http://bit.ly/1Qph2mS
-            build_list.append(album)  # Album title of song appended to build_list
-            year = str(yearorg)  # Removes Unicode "u" from string I think. http://bit.ly/1Qph2mS
-            build_list.append(year)  # Year of song appended to build_list
-            durationseconds = str(durationorgseconds)  # Removes Unicode "u" from string
-            build_list.append(durationseconds)  # Duration of song in seconds appended to build_list
-            genre = str(genreorg)  # Removes Unicode "u" from string I think. http://bit.ly/1Qph2mS
-            build_list.append(genre)  # Genre of song appended to build_list
-            durationtimefull = str(datetime.timedelta(seconds=durationorgseconds))  # Info at http://bit.ly/1L5pU9t
-            durationtime = durationtimefull[3:7]  # Slices string to minute:second notation. http://bit.ly/1QphhOW
-            build_list.append(durationtime)  # Time of song in minutes/seconds of song appended to build_list
-            comment = str(commentorg)  # Removes Unicode "u" from string I think. http://bit.ly/1Qph2mS
-            build_list.append(comment)  # Comment in ID3 data appended to build_list
-            full_file_name = str(location_list[x])
-            print full_file_name
-            if sys.platform.startswith('linux'):
-                title_with_whitespace = full_file_name
-                title_without_whitespace = title_with_whitespace.replace(" ", "_")
-                full_file_name = title_without_whitespace
-                current_path = os.getcwd()
-                temp_path = str(current_path)+'/music'
-                os.chdir(temp_path)  # resets path
-                os.rename(str(title_with_whitespace), str(title_without_whitespace))
-                os.chdir(current_path)# resets path
-            build_list.append(full_file_name)
-            song_list_generate.append(build_list)
-            build_list.append(x)
-            build_list = []
-            y = len(location_list) - x
-            print "www.convergencejukebox.com Building your database " + str(full_file_name) + ". " + str(y) + \
-                  " files remaining to process."
+            build_list.append(myfile.title)  # Title of song appended to build_list
+            try:  # http://www.pythonlovers.net/python-exceptions-handling
+                unicode_crash_test = str(myfile.title)  # Causes crash if Unicode found in Artist Name
+            except UnicodeEncodeError:
+                print str(location_list[x])
+                #bad_file_name = str(location_list[x])
+                file_name_with_error = str(location_list[x])
+                log_file_entry = open("log.txt", "a+")  # new song_list added to log file.
+                log_file_entry.write(str(file_name_with_error + ' was deleted because of a Unicode character in its ID3 Title data.' + '\n'))
+                log_file_entry.close()
+                print "Title Unicode Error"
+                if sys.platform == 'win32':
+                    print "Removing " + str(location_list[x])
+                    os.remove(str(os.path.dirname(full_path)) + "\music" + "\\" + location_list[x])
+                if sys.platform.startswith('linux'):
+                    os.remove(str(os.path.dirname(full_path)) + "/music" + "/" + location_list[x])
+                delete_indicator = "yes"
+                if location_list[x] in build_list:
+                    print "We need to delete " + str(location_list[x]) + " here Unicode title."
+            try:  # http://www.pythonlovers.net/python-exceptions-handling
+                unicode_crash_test = str(myfile.artist)  # Causes crash if Unicode found in Artist Name
+            except UnicodeEncodeError:
+                print str(location_list[x])
+                #bad_file_name = str(location_list[x])
+                file_name_with_error = str(location_list[x])
+                log_file_entry = open("log.txt", "a+")  # new song_list added to log file.
+                log_file_entry.write(str(file_name_with_error + ' was deleted because of a Unicode character in its ID3 Artist data.' + '\n'))
+                log_file_entry.close()
+                print "Artist Unicode Error"
+                if sys.platform == 'win32':
+                    print "Removing " + str(location_list[x])
+                    os.remove(str(os.path.dirname(full_path)) + "\music" + "\\" + location_list[x])
+                if sys.platform.startswith('linux'):
+                    os.remove(str(os.path.dirname(full_path)) + "/music" + "/" + location_list[x])
+                delete_indicator = "yes"
+                if location_list[x] in build_list:
+                    print "We need to delete " + str(location_list[x]) + " here Unicode title."
+            try:  # http://www.pythonlovers.net/python-exceptions-handling
+                unicode_crash_test = str(myfile.comment)  # Causes crash if Unicode found in Artist Name
+            except UnicodeEncodeError:
+                print str(location_list[x])
+                #bad_file_name = str(location_list[x])
+                file_name_with_error = str(location_list[x])
+                log_file_entry = open("log.txt", "a+")  # new song_list added to log file.
+                log_file_entry.write(str(file_name_with_error + ' was deleted because of a Unicode character in its ID3 Comment data.' + '\n'))
+                log_file_entry.close()
+                print "Comment Unicode Error"
+                if sys.platform == 'win32':
+                    print "Removing " + str(location_list[x])
+                    os.remove(str(os.path.dirname(full_path)) + "\music" + "\\" + location_list[x])
+                if sys.platform.startswith('linux'):
+                    os.remove(str(os.path.dirname(full_path)) + "/music" + "/" + location_list[x])
+                delete_indicator = "yes"
+                if location_list[x] in build_list:
+                    print "We need to delete " + str(location_list[x]) + " here Unicode title."
+            if myfile.artist == "":  # Check for invalid Artist mp3 ID tag
+                print str(location_list[x])
+                #bad_file_name = str(location_list[x])
+                file_name_with_error = str(location_list[x])
+                print str(location_list[x]) + "'s Artist ID3 tag is not valid for Convergence Jukebox. Please correct or remove from media folder."
+                log_file_entry = open("log.txt", "a+")  # new song_list added to log file.
+                log_file_entry.write(str(file_name_with_error + ' was deleted because its ID3 Artist data is not valid.' + '\n'))
+                log_file_entry.close()
+                if sys.platform == 'win32':
+                    print "Removing " + str(location_list[x])
+                    os.remove(str(os.path.dirname(full_path)) + "\music" + "\\" + location_list[x])
+                if sys.platform.startswith('linux'):
+                    os.remove(str(os.path.dirname(full_path)) + "/music" + "/" + location_list[x])
+                delete_indicator = "yes"
+                if location_list[x] in build_list:
+                    print "We need to delete " + str(location_list[x]) + " here Unicode title."
+            if myfile.title == "":  # Check for invalid mp3 Title ID tag
+                print str(location_list[x])
+                #bad_file_name = str(location_list[x])
+                file_name_with_error = str(location_list[x])
+                print str(location_list[x]) + "'s Title ID3 tag is not valid for Convergence Jukebox. Please correct or remove from media folder."
+                log_file_entry = open("log.txt", "a+")  # new song_list added to log file.
+                log_file_entry.write(str(file_name_with_error + ' was deleted because its ID3 Title data is not valid.' + '\n'))
+                log_file_entry.close()
+                if sys.platform == 'win32':
+                    print "Removing " + str(location_list[x])
+                    os.remove(str(os.path.dirname(full_path)) + "\music" + "\\" + location_list[x])
+                if sys.platform.startswith('linux'):
+                    os.remove(str(os.path.dirname(full_path)) + "/music" + "/" + location_list[x])
+                delete_indicator = "yes"
+                if location_list[x] in build_list:
+                    print "We need to delete " + str(location_list[x]) + " here Unicode title."
+            if x == 0:
+                database_indicator()
+            if delete_indicator == "yes":
+                file_count_update = open("file_count.txt", "w+")  # Writes new filecount to filecount.txt file for next start.
+                s = str(0)
+                file_count_update.write(s)
+                file_count_update.close()
+            if delete_indicator != "yes":
+                build_list.append(myfile.artist)  # Artist of song appended to build_list
+                build_list.append(myfile.album)  # Album title of song appended to build_list
+                build_list.append(myfile.year)  # Year of song appended to build_list
+                build_list.append(myfile.duration)  # Duration of song in seconds appended to build_list
+                build_list.append(myfile.genre)  # Genre of song appended to build_list
+                durationtimefull = str(datetime.timedelta(seconds=durationorgseconds))  # Info at http://bit.ly/1L5pU9t
+                durationtime = durationtimefull[3:7]  # Slices string to minute:second notation. http://bit.ly/1QphhOW
+                build_list.append(durationtime)  # Time of song in minutes/seconds of song appended to build_list
+                build_list.append(myfile.comment)  # Comment in ID3 data appended to build_list
+                full_file_name = str(location_list[x])
+                if sys.platform.startswith('linux'):
+                    title_with_whitespace = full_file_name
+                    title_without_whitespace = title_with_whitespace.replace(" ", "_")
+                    full_file_name = title_without_whitespace
+                    current_path = os.getcwd()
+                    temp_path = str(current_path)+'/music'
+                    os.chdir(temp_path)  # resets path
+                    os.rename(str(title_with_whitespace), str(title_without_whitespace))
+                    os.chdir(current_path)# resets path
+                build_list.append(full_file_name)
+                '''build_list_checker = build_list[8]
+                if bad_file_name != build_list_checker:
+                    #bad_file_name = ""
+                    song_list_generate.append(build_list)
+                build_list_checker = ""'''
+                song_list_generate.append(build_list)
+                build_list.append(x)
+                print location_list[x]
+                print build_list[8]
+                print build_list
+                build_list = []
+                y = len(location_list) - x
+                # print "www.convergencejukebox.com Building your database " + str(full_file_name) + ". " + str(y) + \
+                # " files remaining to process."
+            delete_indicator = ""
+            print x
             x += 1
-
         song_list_save = open('song_list.pkl', 'wb')  # song_list saved as binary pickle file
         pickle.dump(song_list_generate, song_list_save)
         song_list_save.close()
@@ -1119,6 +1216,7 @@ def database_indicator():
 
         count()
 
+    global song_counter
     song_counter = tk.Tk()
     song_counter.title("Updating Song Database")
     #label = tk.Label(song_counter, fg="black", width=130, height=200, font = "Helvetica 16 bold italic")
@@ -1127,6 +1225,7 @@ def database_indicator():
     song_counter_label(label)
     song_counter.mainloop()
     print "All Done"
+
 
 set_up_user_files_first_time()
 write_jukebox_startup_to_log()  # Writes Jukebox start time to log.
