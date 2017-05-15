@@ -1,5 +1,7 @@
 # Convergence Jukebox
 
+**NOTE** Convergence Jukebox is no longer being developed. Instead check out **Convergence Jukebox 2** on this GIT site.
+
 **Convergence Jukebox** is open source Python based software that has been written in Python 2.7 to emulate a “retro” style jukebox. The type of jukebox that was popular in bars, restaurants and recreation areas during the 1950’s and 60’s. Written from scratch by **[Brad Fortner]** of Convergence Communications, Convergence Jukebox plays properly formed ID3 tagged mp3 media. 
 
 The Jukebox can be controlled for “personal” use by your computer keyboard but is better operated with a USB keypad. Its output resolution is modifiable allowing it to connect to inexpensive computer, laptop or TV displays with its “retro look and feel”. It can even be connected to bill, coin or card acceptors for “pay to play” situations. More information can including an **[FAQ]** and instructions on how to **[format mp3's]** be found on the Convergence Jukebox blog at **[www.convergencejukebox.com]**.
