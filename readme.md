@@ -52,7 +52,8 @@ Convergence Jukebox uses a number of open source projects to work properly:
 
 ### Installation
 
-- Clone Convergence Jukebox to a directory on your Windows computer.
+- Clone Convergence Jukebox to a directory on your Windows or Raspian computer.
+    - at time of writing code has not been tested on Raspberry Pi.
 - Convergence Jukebox 2 requires Python 2.7 and the libraries (noted above) installed.
 - Convergence Jukebox 2 requires a music subdirectory with a minimum of 50 properly formed mp3 files.
     - download 80+ properly formed creative commons mp3's from http://bit.ly/2qnxahz
