@@ -32,8 +32,8 @@ Features include;
 
 
 > The Convergence Jukebox website at **[www.convergencejukebox.com]** contains links
-> to Python source code as well as a **Windows.exe and Raspberry Pi SD card** .img versions of 
->Convergence Jukebox.
+> to Python source code as well as a **Windows.exe and Raspberry Pi SD card**.img versions of 
+>Convergence Jukebox. http://bit.ly/2qobIco
 
 
 ### Version
