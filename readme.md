@@ -78,11 +78,11 @@ Some versions of Convergence Jukebox are distributed with Creative Commons Music
 
 ### Development
 
-Want to contribute? Great! Fork the code.....
+Development is completed on this version. Your probably better to develop Convergence Jukebox 2 found on this GIT site.
 
 ### Todos
 
- - So much right now I don't even want to think about it.
+Development is completed on this version. See Convergence Jukebox 2 on this GIT site.
 
 License
 ----
