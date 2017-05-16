@@ -36,7 +36,6 @@ Features include;
 >Convergence Jukebox.
 
 
-
 ### Version
 0.004
 
@@ -53,19 +52,14 @@ Convergence Jukebox uses a number of open source projects to work properly:
 
 ### Installation
 
-As soon as I figure out how to do a repository:
-
-```sh
-$ i will post code here
-```
-
-```sh
-$ and here
-$ and here
-$ and here
-$ and here
-$ and here
-```
+- Clone Convergence Jukebox to a directory on your Windows computer.
+- Convergence Jukebox 2 requires Python 2.7 and the libraries (noted above) installed.
+- Convergence Jukebox 2 requires a music subdirectory with a minimum of 50 properly formed mp3 files.
+    - download 80+ properly formed creative commons mp3's from http://bit.ly/2qnxahz
+    - info on properly formed mp3's at http://bit.ly/2rbIw9t
+= Launch convergencejukebox.py in order for Convergence Jukebox to operate. It will launch all the other programs.
+- Convergence Jukebox as written here requires a 720p display in order for the GUI to line up correctly.
+- Convergence Jukebox documentation can be found at http://bit.ly/2pSgoU7
 
 ### Music
 
